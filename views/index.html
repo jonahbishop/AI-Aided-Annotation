@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>MMR-Assisted Summarization</title>
+    <!-- <meta name="description" content="A cool thing made with Glitch"> -->
+    <!-- <link id="favicon" rel="icon" href="https://gomix.com/favicon-app.ico" type="image/x-icon"> -->
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="/public/style.css" />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3"
+      crossorigin="anonymous"
+    />
+  </head>
+  <body>
+    
+        <!-- Button trigger modal -->
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
+      Launch static backdrop modal
+    </button>
+
+    <!-- Modal -->
+    <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="staticBackdropLabel">Modal title</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            ...
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-primary">Understood</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <header>
+      <div class="container-md py-3">
+        <h1 class="text-center">
+          Interactive Text Summarization using Explorable MMR
+        </h1>
+      </div>
+    </header>
+
+    <main>
+      <!--
+      See:
+      https://getbootstrap.com/docs/5.1/layout/grid/
+      https://getbootstrap.com/docs/5.1/layout/gutters/
+      -->
+
+      <div class="container-md px-4 py-5 border">
+        <!-- TOP ROW (query, lambda slider, rank button) -->
+        <div class="row gx-2 py-3">
+
+          <div class="col-md-2">
+            <div class="p-1">
+              <button type="text" id="upload-button" class="btn btn-primary mb-3">
+                Upload
+              </button>
+            </div>
+          </div>
+
+          <div class="col-md-3">
+            <div class="p-1">
+              <div class="row">
+                <div class="col-2">
+                  <label for="keywordQuery" class="col-form-label">Query</label>
+                </div>
+                <form autocomplete="off">
+                  <div class="autocomplete" style="width:400px;">
+                    <input id="myKeywords" type="text" name="myCountry" data-role="tagsinput" placeholder="vaccine, johnson" />
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-4">
+            <div class="p-1">
+              <div class="row">
+                <div class="col-2">
+                  <small class="align-middle">Novel</small>
+                  <!-- <small>Different from Summary</small> -->
+                  <!-- <label for="lambdaSlider" class="form-label">Different from Summary </label> -->
+                  <!-- λ -->
+                </div>
+                <div class="col-8">
+                  <!-- TODO: fix the spacing here... -->
+                  <input type="range" class="form-range align-middle" id="lambdaSlider" />
+                </div>
+                <div class="col-2">
+                  <!-- <label for="lambdaSlider" class="form-label">Similar to Query</label> -->
+                  <!-- <small>Similar to Query</small> -->
+                  <small class="align-middle">Query Relevant</small>
+                  <!-- λ -->
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- <div class="col-md-1"></div> -->
+
+          <div class="col-md-3">
+            <div class="p-1 text-center">
+              <button type="text" id="rank-button" class="btn btn-primary mb-3">
+                Rank
+              </button>
+            </div>
+          </div>
+        </div>
+        <!-- END OF TOP ROW (query, lambda slider, rank button) -->
+
+        <!-- BOTTOM ROW (document, ranking, summary) -->
+        <div class="row py-3 gx-2">
+          <div class="col-md-4">
+            <h3>Document</h3>
+            <div class="p-2 border summary-row" id="document-view">
+              <p>F.D.A. to Allow ‘Mix and Match’ Approach for Covid Booster Shots</p>
+              <p>The agency may act this week, when it is expected to authorize booster shots for recipients of the Moderna and Johnson & Johnson vaccines.</p>
+              <p>The Food and Drug Administration is planning to allow Americans to receive a different Covid-19 vaccine as a booster than the one they initially received, a move that could reduce the appeal of the Johnson & Johnson vaccine and provide flexibility to doctors and other vaccinators.</p>
+              <p>The government would not recommend one shot over another, and it might note that using the same vaccine as a booster when possible is preferable, people familiar with the agency’s planning said. But vaccine providers could use their discretion to offer a different brand, a freedom that state health officials have been requesting for weeks.</p>
+              <p>The approach was foreshadowed on Friday, when researchers presented the findings of a federally funded “mix and match” study to an expert committee that advises the Food and Drug Administration. The study found that recipients of Johnson & Johnson’s single-dose shot who received a Moderna booster saw their antibody levels rise 76-fold in 15 days, compared with only a fourfold increase after an extra dose of Johnson & Johnson.</p>
+              <p>Federal regulators this week are aiming to greatly expand the number of Americans eligible for booster shots. The F.D.A. is expected to authorize boosters of the Moderna and Johnson & Johnson vaccines by Wednesday evening; it could allow the mix-and-match approach by then. The agency last month authorized booster shots of the Pfizer-BioNTech vaccine for at least six months after the second dose.</p>
+              <p>An advisory committee of the Centers for Disease Control and Prevention will take up the booster issue on Thursday; the agency will then issue its own recommendations. By the end of the week, tens of millions more Americans could be eligible for extra shots.</p>
+              <p>The study presented to the F.D.A.’s advisory panel last week, conducted by the National Institutes of Health, suggested that Johnson & Johnson recipients might benefit most from a booster shot of the Moderna vaccine. A shot of the Pfizer-BioNTech vaccine also raised the antibody levels of Johnson & Johnson recipients more than Johnson & Johnson did, the study found, although not as much as Moderna did. The N.I.H. researchers tested a full dose of Moderna’s vaccine for a booster shot, but regulators are also considering whether to authorize a half dose.</p>
+              <p>Experts emphasized last week that the new data was based on small groups of volunteers and short-term findings. Only antibody levels — one measure of the immune response — were calculated as part of the preliminary data, not the levels of immune cells primed to attack the coronavirus, which scientists say are also an important measure of a vaccine’s success.</p>
+              <p>The study’s researchers warned against using the findings to conclude that any one combination of vaccines was better. The study “was not powered or designed to compare between groups,” said Dr. Kirsten E. Lyke, a professor at the University of Maryland School of Medicine, who presented the data.</p>
+              <p>While the research on mixing and matching doses is somewhat thin, even some scientists who have strongly criticized the Biden administration’s booster policy said that providers should be given a measure of discretion as the campaign ramps up.</p>
+              <p>“If you look at the data, it certainly looks like it might be better,” Dr. Paul A. Offit, the director of the Vaccine Education Center at Children’s Hospital of Philadelphia, said of Moderna or Pfizer boosters for Johnson & Johnson recipients. “I think we should move quickly on this, because it’s already happening.”</p>
+              <p>At the meeting on Friday of the Food and Drug Administration’s expert panel, of which Dr. Offit is a member, top C.D.C. officials argued that providers needed latitude to offer different vaccines as boosters because patients might have had adverse reactions after their initial shots or presented other new concerns. Providers also might not have access to a vaccine a patient initially received, they said.</p>
+              <p>The federal government will cover the cost of a different vaccine as a booster only if the Food and Drug Administration authorizes the approach, officials said.</p>
+              <p>“I’d like to reiterate how important it is from a programmatic perspective to have a little bit of flexibility,” Dr. Melinda Wharton, a top vaccine official at the C.D.C., told the F.D.A. panel.</p>
+              <p>“From a public health perspective, there’s a clear need in some situations for individuals to receive a different vaccine,” said Dr. Amanda Cohn, another high-ranking C.D.C. official.</p>
+              <p>Both Moderna and Pfizer require two initial doses, separated by about a month. Regulators are expected to follow the same approach they took with Pfizer’s vaccine and authorize a booster of Moderna’s vaccine about six months after the second shot. Johnson & Johnson is headed for a booster shot of its vaccine at least two months after the first dose.</p>
+              <p>State health officials have been arguing for weeks that recipients of booster shots should not be strictly bound to the vaccine they initially received, for reasons such as supply, patient choice and ease of administration.</p>
+              <p>“The No. 1 thing I heard from state health secretaries was the need for permissive language around a mix-and-match approach,” said Dr. Nirav D. Shah, Maine’s top health official and the president of the Association of State and Territorial Health Officials.</p>
+              <p>Dr. Clay Marsh, West Virginia’s Covid-19 czar, said the state had a greater supply of Moderna and Pfizer-BioNTech vaccines than of Johnson & Johnson’s, so officials there might prefer to use them for boosters out of convenience. Others said the option of switching vaccines could streamline the administration of boosters.</p>
+              <p>“The impetus for states and local health departments was that if they were going to go out to a community site or long-term care facility and start providing boosters, it was a little inefficient to show up somewhere and say, ‘We’re just doing the people who got Pfizer,’” said Dr. Marcus Plescia, the chief medical officer for the Association of State and Territorial Health Officials. “When you have a captive audience, you want to take advantage of that.”</p>
+              <p>Yet more options could lead to more confusion about booster shots, some experts have said. The Food and Drug Administration this week is expected to authorize boosters for all Johnson & Johnson recipients 18 and older. But the only Moderna recipients who are expected to become eligible for boosters are those who are at least 65 or otherwise considered at high risk, following the same eligibility requirements for recipients of Pfizer-BioNTech’s vaccine.</p>
+              <p>Jeannette Y. Lee, a biostatistician at the University of Arkansas for Medical Sciences and a member of the F.D.A.’s expert committee, warned on Friday that allowing people to switch from their original vaccine type could be “very, very messy in terms of the messaging.”</p>
+              <p>It remains unclear what dosage of Moderna’s vaccine might be authorized for use as a booster for recipients of other vaccines. Last week, the advisory committee voted unanimously to recommend that Moderna recipients receive a third shot of that vaccine as a booster, but at only half a dose.</p>
+              <p>Dr. Anthony S. Fauci, the government’s top infectious disease expert, publicly suggested on Sunday that the government was headed toward granting greater leeway, at least for Johnson & Johnson recipients. “I believe there’s going to be a degree of flexibility of what a person who got the J.&J. originally can do, either with J.&J. or with the mix-and-match from other products,” he said on “Fox News Sunday.”</p>
+              <p>Just over 15 million people have been fully vaccinated with Johnson & Johnson’s vaccine, compared with 69.5 million for Moderna’s and 104.5 million with Pfizer-BioNTech’s.</p>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <h3>Top Sentences</h3>
+            <div class="p-2 border summary-row" id="ranking-view">
+              
+              <!--
+              <div class="card">
+                <div class="card-body">This is an example sentence</div>
+              </div>
+              <div class="card"><div class="card-body">This too</div></div>
+              <div class="card">
+                <div class="card-body">This also is an example sentence</div>
+              </div>
+              <div class="card">
+                <div class="card-body">
+                  And I must say, this is an example of a really, really long
+                  sentence which just doesn't seem to end, but hey, at least it
+                  helps us understand how the line breaks work.
+                </div>
+              </div>
+              <div class="card">
+                <div class="card-body">This is an example sentence</div>
+              </div>
+              <div class="card"><div class="card-body">This too</div></div>
+              <div class="card">
+                <div class="card-body">This also is an example sentence</div>
+              </div>
+              <div class="card">
+                <div class="card-body">
+                  And I must say, this is an example of a really, really long
+                  sentence which just doesn't seem to end, but hey, at least it
+                  helps us understand how the line breaks work.
+                </div>
+              </div>
+              <div class="card">
+                <div class="card-body">This is an example sentence</div>
+              </div>
+              <div class="card"><div class="card-body">This too</div></div>
+              <div class="card">
+                <div class="card-body">This also is an example sentence</div>
+              </div>
+              <div class="card">
+                <div class="card-body">
+                  And I must say, this is an example of a really, really long
+                  sentence which just doesn't seem to end, but hey, at least it
+                  helps us understand how the line breaks work.
+                </div>
+              </div> -->
+            </div>
+          </div>
+          <div class="col-md-1">
+            <!-- Boy, do I not know why this works to center things vertically... -->
+            <div class="d-flex flex-column justify-content-center align-items-center lol-confusing-center">
+              <div class="row">
+                <button type="text" id="candidate-to-summary" class="btn btn-primary btn-sm" disabled>→</button>
+              </div>
+              <div class="row">
+                <button type="text" id="summary-to-candidate" class="btn btn-primary btn-sm" disabled>←</button>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <h3>Summary</h3>
+            <div class="p-2 border summary-row" id="summary-view">
+              <!-- TODO: Similarly, we need to add an X button or something -->
+              <div class="card">
+                <div class="card-body">
+                  This is the first sentence of our summary!
+                </div>
+              </div>
+              <div class="card">
+                <div class="card-body">
+                  This is another important, yet diffrent sentence
+                </div>
+              </div>
+            </div>
+          </div>
+        </div> 
+        <!-- END OF BOTTOM ROW (document, ranking, summary) -->
+        
+        
+        
+<!--         <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br> -->
+        
+        <!-- START of add/remove in list-->
+        
+<!--         <div class="row py-4 gx-3">
+          <div class="col-md-4">
+            <h3>Document</h3>
+            <div class="p-2 border summary-row" id="document-view">
+              <p>F.D.A. to Allow ‘Mix and Match’ Approach for Covid Booster Shots</p>
+              <p>The agency may act this week, when it is expected to authorize booster shots for recipients of the Moderna and Johnson & Johnson vaccines.</p>
+              <p>The Food and Drug Administration is planning to allow Americans to receive a different Covid-19 vaccine as a booster than the one they initially received, a move that could reduce the appeal of the Johnson & Johnson vaccine and provide flexibility to doctors and other vaccinators.</p>
+              <p>The government would not recommend one shot over another, and it might note that using the same vaccine as a booster when possible is preferable, people familiar with the agency’s planning said. But vaccine providers could use their discretion to offer a different brand, a freedom that state health officials have been requesting for weeks.</p>
+              <p>The approach was foreshadowed on Friday, when researchers presented the findings of a federally funded “mix and match” study to an expert committee that advises the Food and Drug Administration. The study found that recipients of Johnson & Johnson’s single-dose shot who received a Moderna booster saw their antibody levels rise 76-fold in 15 days, compared with only a fourfold increase after an extra dose of Johnson & Johnson.</p>
+              <p>Federal regulators this week are aiming to greatly expand the number of Americans eligible for booster shots. The F.D.A. is expected to authorize boosters of the Moderna and Johnson & Johnson vaccines by Wednesday evening; it could allow the mix-and-match approach by then. The agency last month authorized booster shots of the Pfizer-BioNTech vaccine for at least six months after the second dose.</p>
+              <p>An advisory committee of the Centers for Disease Control and Prevention will take up the booster issue on Thursday; the agency will then issue its own recommendations. By the end of the week, tens of millions more Americans could be eligible for extra shots.</p>
+              <p>The study presented to the F.D.A.’s advisory panel last week, conducted by the National Institutes of Health, suggested that Johnson & Johnson recipients might benefit most from a booster shot of the Moderna vaccine. A shot of the Pfizer-BioNTech vaccine also raised the antibody levels of Johnson & Johnson recipients more than Johnson & Johnson did, the study found, although not as much as Moderna did. The N.I.H. researchers tested a full dose of Moderna’s vaccine for a booster shot, but regulators are also considering whether to authorize a half dose.</p>
+              <p>Experts emphasized last week that the new data was based on small groups of volunteers and short-term findings. Only antibody levels — one measure of the immune response — were calculated as part of the preliminary data, not the levels of immune cells primed to attack the coronavirus, which scientists say are also an important measure of a vaccine’s success.</p>
+              <p>The study’s researchers warned against using the findings to conclude that any one combination of vaccines was better. The study “was not powered or designed to compare between groups,” said Dr. Kirsten E. Lyke, a professor at the University of Maryland School of Medicine, who presented the data.</p>
+              <p>While the research on mixing and matching doses is somewhat thin, even some scientists who have strongly criticized the Biden administration’s booster policy said that providers should be given a measure of discretion as the campaign ramps up.</p>
+              <p>“If you look at the data, it certainly looks like it might be better,” Dr. Paul A. Offit, the director of the Vaccine Education Center at Children’s Hospital of Philadelphia, said of Moderna or Pfizer boosters for Johnson & Johnson recipients. “I think we should move quickly on this, because it’s already happening.”</p>
+              <p>At the meeting on Friday of the Food and Drug Administration’s expert panel, of which Dr. Offit is a member, top C.D.C. officials argued that providers needed latitude to offer different vaccines as boosters because patients might have had adverse reactions after their initial shots or presented other new concerns. Providers also might not have access to a vaccine a patient initially received, they said.</p>
+              <p>The federal government will cover the cost of a different vaccine as a booster only if the Food and Drug Administration authorizes the approach, officials said.</p>
+              <p>“I’d like to reiterate how important it is from a programmatic perspective to have a little bit of flexibility,” Dr. Melinda Wharton, a top vaccine official at the C.D.C., told the F.D.A. panel.</p>
+              <p>“From a public health perspective, there’s a clear need in some situations for individuals to receive a different vaccine,” said Dr. Amanda Cohn, another high-ranking C.D.C. official.</p>
+              <p>Both Moderna and Pfizer require two initial doses, separated by about a month. Regulators are expected to follow the same approach they took with Pfizer’s vaccine and authorize a booster of Moderna’s vaccine about six months after the second shot. Johnson & Johnson is headed for a booster shot of its vaccine at least two months after the first dose.</p>
+              <p>State health officials have been arguing for weeks that recipients of booster shots should not be strictly bound to the vaccine they initially received, for reasons such as supply, patient choice and ease of administration.</p>
+              <p>“The No. 1 thing I heard from state health secretaries was the need for permissive language around a mix-and-match approach,” said Dr. Nirav D. Shah, Maine’s top health official and the president of the Association of State and Territorial Health Officials.</p>
+              <p>Dr. Clay Marsh, West Virginia’s Covid-19 czar, said the state had a greater supply of Moderna and Pfizer-BioNTech vaccines than of Johnson & Johnson’s, so officials there might prefer to use them for boosters out of convenience. Others said the option of switching vaccines could streamline the administration of boosters.</p>
+              <p>“The impetus for states and local health departments was that if they were going to go out to a community site or long-term care facility and start providing boosters, it was a little inefficient to show up somewhere and say, ‘We’re just doing the people who got Pfizer,’” said Dr. Marcus Plescia, the chief medical officer for the Association of State and Territorial Health Officials. “When you have a captive audience, you want to take advantage of that.”</p>
+              <p>Yet more options could lead to more confusion about booster shots, some experts have said. The Food and Drug Administration this week is expected to authorize boosters for all Johnson & Johnson recipients 18 and older. But the only Moderna recipients who are expected to become eligible for boosters are those who are at least 65 or otherwise considered at high risk, following the same eligibility requirements for recipients of Pfizer-BioNTech’s vaccine.</p>
+              <p>Jeannette Y. Lee, a biostatistician at the University of Arkansas for Medical Sciences and a member of the F.D.A.’s expert committee, warned on Friday that allowing people to switch from their original vaccine type could be “very, very messy in terms of the messaging.”</p>
+              <p>It remains unclear what dosage of Moderna’s vaccine might be authorized for use as a booster for recipients of other vaccines. Last week, the advisory committee voted unanimously to recommend that Moderna recipients receive a third shot of that vaccine as a booster, but at only half a dose.</p>
+              <p>Dr. Anthony S. Fauci, the government’s top infectious disease expert, publicly suggested on Sunday that the government was headed toward granting greater leeway, at least for Johnson & Johnson recipients. “I believe there’s going to be a degree of flexibility of what a person who got the J.&J. originally can do, either with J.&J. or with the mix-and-match from other products,” he said on “Fox News Sunday.”</p>
+              <p>Just over 15 million people have been fully vaccinated with Johnson & Johnson’s vaccine, compared with 69.5 million for Moderna’s and 104.5 million with Pfizer-BioNTech’s.</p>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <h3>Top Sentences</h3>
+            <select id="select1" name="select1" class="form-select" multiple aria-label="multiple select example" size="26">
+              
+              <ul class="list-group">
+                <option value="1"><li class="list-group-item d-flex justify-content-between align-items-center">
+                  A Fir list item
+                </li></option>
+                <option value="2"><li class="list-group-item d-flex justify-content-between align-items-center">
+                  A Sec second list item And I must say, this is an example of a really, really long sentence which just doesn't seem to end, but hey, at least it helps us understand how the line breaks work.
+                </li></option>
+              </ul>
+            </select>
+          </div>
+          <div class="col-md-1">
+            <div class="relative">
+              <input  type="button" id="add" value="&#8702;" onclick="addOptions( 'select1', 'select2' )" />
+              <input  type="button" id="remove" value="&#8701;" onclick="addOptions( 'select2', 'select1' )" />
+            </div>
+          </div>
+          <div class="col-md-3 text-break">
+            <h3>Summary</h3>
+            <select id="select2" name="select2" class="form-select" multiple aria-label="multiple select example" size="26">
+              
+              <ul class="list-group">
+                <option value="1"><li class="list-group-item d-flex justify-content-between align-items-center">
+                  A list item
+                  <span>Score: 89.7</span>
+                </li></option>
+                <option value="2"><li class="list-group-item d-flex justify-content-between align-items-center">
+                  A second list item
+                </li></option>
+              </ul>
+            </select>
+            </div>
+          </div>
+        </div> -->
+        <!-- End For add/remove -->
+      </div>
+
+      <footer>
+        <!-- <a href="https://glitch.com">
+        Remix this in Glitch
+      </a> -->
+      </footer>
+
+      <!-- Your web-app is https, so your scripts need to be too -->
+      <script
+        src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p"
+        crossorigin="anonymous"
+      ></script>
+      <script
+        src="https://code.jquery.com/jquery-2.2.1.min.js"
+        integrity="sha256-gvQgAFzTH6trSrAWoH1iPo9Xc96QxSZ3feW6kem+O00="
+        crossorigin="anonymous"
+      ></script>
+<!--       <script src="/public/top_sentences.js"></script> <!-- :) --> -->
+<!--       <script src="/public/demo_article.js"></script> -->
+      <script src="/public/client.js" type="module"></script>
+      <script src="../js/bootstrap-tagsinput.js"></script>
+    </main>
+    
+  </body>
+</html>
