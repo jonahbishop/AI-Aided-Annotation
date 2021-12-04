@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Interactive MMR</title>
+  <link rel="stylesheet" href="../public/style.css">
+</head>
+<body>
+  <h4>Interactive Text Summarization using Explorable MMR</h4>
+  <h2>
+    Satvik Chekuri, Yuan Li, Daniel Manesh, and Syed Muhammad Farhan
+  </h2>
+  <iframe  src="https://www.youtube.com/embed/MJEAGd1bQuc" frameborder="0" allowfullscreen></iframe> <! --- just left it here to leave a place for later video --->
+  <h2>
+    Maximal Marginal Relevance Explained
+  </h2>
+  <img src="https://cdn.glitch.me/bdcc816b-2d5c-441a-8161-a80be1dc6a74%2FScreen%20Shot%202021-12-02%20at%205.44.59%20PM.png?v=1638485108428" alt="equition" width = "60%">
+  <img src = "https://cdn.glitch.me/bdcc816b-2d5c-441a-8161-a80be1dc6a74%2FScreen%20Shot%202021-12-02%20at%206.18.48%20PM.png?v=1638487136072" alt = "explanation" width = "60%">
+  <ul>
+    <li>Assume that we are given a database of 5 documents d<sub>i</sub> and a query q, and we calculated, given a symmetrical similarity measure, the similarity values as below. Further assume that λ is given by the user to be 0.5:</li>
+  </ul>
+  <img src = "https://cdn.glitch.me/bdcc816b-2d5c-441a-8161-a80be1dc6a74%2FScreen%20Shot%202021-12-02%20at%206.57.42%20PM.png?v=1638489469742" alt = "valueMat" width="30%">
+  <ul>
+    <li>Initially our result set S is empty. Therefore the second half of the equation, which is the max pairwise similarity within S, will be zero. For the first iteration, MMR equation reduces to:
+      <br> &nbsp&nbsp&nbsp&nbsp MMR = arg max (sim (d<sub>i</sub>, q))
+      <br> d<sub>1</sub> has the maximum similarity with q, therefore we pick it and add it to S. Now, S = {d<sub>1</sub>}.</li>
+    <li>Since S = {d<sub>1</sub>}, finding the maximum distance to an element in S to a given d<sub>i</sub> is simply sim(d<sub>1</sub>,d<sub>i</sub>).
+      <br> For d<sub>2</sub>:
+      <br> &nbsp&nbsp&nbsp&nbsp sim(d<sub>1</sub>, d<sub>2</sub>) = 0.11
+      <br> &nbsp&nbsp&nbsp&nbsp sim (d<sub>2</sub>, q) = 0.90
+      <br> &nbsp&nbsp&nbsp&nbsp Then MMR = λ0.90 – (1-λ)0.11 = 0.395
+      <br> Similarly MMR values for d<sub>3</sub>, d<sub>4</sub>, d<sub>5</sub> are 0.135, -0.35 and 0.19 respectively. Since d<sub>2</sub> has the maximum MMR, we add it to S. Now S = {d<sub>1</sub>, d<sub>2</sub>}.
+    </li>
+    <li>This time S = {d<sub>1</sub>, d<sub>2</sub>}. We should find max of sim (d<sub>i</sub>, d<sub>1</sub>) and sim (d<sub>i</sub>, d<sub>2</sub>) for the second part of the equation.
+      <br> For d<sub>3</sub>:
+      <br> &nbsp&nbsp&nbsp&nbsp max{sim (d<sub>1</sub>, d<sub>3</sub>), sim (d<sub>2</sub>, d<sub>3</sub>)} = max {0.23, 0.29} = 0.29
+      <br> &nbsp&nbsp&nbsp&nbsp sim (d<sub>3</sub>, q) = 0.50
+      <br> &nbsp&nbsp&nbsp&nbsp Then MMR = 0.5*0.5 - 0.5*0.29 = 0.105
+      <br> Similarly MMR values for d<sub>4</sub> and d<sub>5</sub> are -0.35 and 0.06 respectively. Since d<sub>2</sub> has the maximum MMR, we add it to S. Now S = {d<sub>1</sub>, d<sub>2</sub>}.
+      <br> d<sub>3</sub> has the maximum MMR, therefor S = {d<sub>1</sub>, d<sub>2</sub>, d<sub>3</sub>}.
+    </li>
+    <li>If we didn't have diversity at all (λ = 1), then our S would have been {d<sub>1</sub>, d<sub>2</sub>, d<sub>5</sub>}.</li>
+  </ul>
+  <img src = "https://cdn.glitch.me/af46e606-1885-4918-bf6f-946722a02e34%2Fezgif.com-gif-maker.gif?v=1638564354147" alt = "rankgif" width="60%">
+  <h2>
+    MMR in Interactive Text Summarization
+  </h2>
+  <ul>
+    Text summarization is the process of summarizing concrete information in large texts for quicker examination and consumption. The resulting short, informative summaries can help readers determine whether the documents are within their interest before going into details.
+
+    <br> &nbsp&nbsp A common approach is <b>Extractive</b> Text Summarization. The main goal is to identify the significant sentences of the original document and add them to the summary. However, this task can be challenging and time-consuming even to the most experienced writer/reporter. It typically requires that person to go through the entire document to locate those key sentences.
+
+    <br> &nbsp&nbsp MMR can help the writer locate those key sentences based on the most relevant words. The idea behind this is that words of higher frequency are more significant than others. Hence, the sentences containing highly frequent are more important. When the user specifies a query including key terms, MMR can rank sentences based on their relevance to the searched query. After the user selects some sentences, with an adjustable λ factor, they can further choose between <b>accuracy</b> (in terms of relevancy to the search query) and <b>diversity</b> (as compared with the selected sentences).
+  </ul> 
+  <h2>Now explore MMR in text summarization yourself!</h2>
+  <button type="button" onclick="location.href = '/home';">Get Started!</button>
+</body>
+</html>

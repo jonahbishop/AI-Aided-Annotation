@@ -37,7 +37,8 @@ def keyword_generator(input_file_path):
   df['word'] = wrd
   df['score'] = scr
   df = df.sort_values(by=['score'], ascending=False).head(20)
-  return df, lines
+  merged_list = [(lines[i], i) for i in range(0, len(lines))]
+  return df, merged_list
 
 def returnLines(file_name):
 
@@ -46,11 +47,6 @@ def returnLines(file_name):
   # f = open(file_name,'r')
   # text_0 = f.read()
   text_0 = file_name
-  # extract content in TEXT tag and remove tags
-  #-------------commented --------------
-  # text_1 = re.search(r"<TEXT>.*</TEXT>",text_0, re.DOTALL)
-  # text_1 = re.sub("<TEXT>\n","",text_1.group(0))
-  # text_1 = re.sub("\n</TEXT>","",text_1)
 
   # replace all types of quotations by normal quotes
   text_1 = re.sub("\n"," ",text_0)
@@ -67,7 +63,7 @@ def returnLines(file_name):
 
   return lines
 
-def summy_generator(self, input_file_path, input_query, lambda_value, bsent):
+def summy_generator(sessionID, input_sentences, input_query, bsent):
 
   # Run MMR Ranking
   #---------------------------------------------------------------------------------
@@ -76,20 +72,22 @@ def summy_generator(self, input_file_path, input_query, lambda_value, bsent):
   #---------------------------------------------------------------------------------
   sentences = []
   lines=[]
-  queryWords = []
+  # queryWords = []
+  queryWords = input_query
 
-  sentences = sentences + processFile(input_file_path)
-  lines = lines + returnLines(input_file_path)
-  linestring = " "
-  for line in lines:
-      linestring = linestring + " " + line + " "
-  sen_len = len(linestring)
+  sentences = sentences + processFile(sessionID, input_sentences)
+  # lines = lines + returnLines(input_file_path)
+  # linestring = " "
+  # for line in lines:
+  #     linestring = linestring + " " + line + " "
+  # sen_len = len(linestring)
+  sen_len = len(input_sentences)
   # calculate TF, IDF and TF-IDF scores
   IDF_w 		= IDFs(sentences)
   TF_IDF_w 	= TF_IDF(sentences)
 
   # build query; set the number of words to include in our query
-  queryWords.append(input_query)
+  # queryWords.append(input_query)
   query = sentence.sentence("query", queryWords, queryWords)
 
   # pick a sentence that best matches the query
@@ -97,9 +95,9 @@ def summy_generator(self, input_file_path, input_query, lambda_value, bsent):
   if len(bsent) <1:
     best1sentence = bsent
   else: 
-    best1sentence = bestSenPrep(bsent)[0]
+    best1sentence = bestSenPrep(sessionID, bsent)[0]
   # build summary by adding more relevant sentences
-  summary = makeSummary(sentences, best1sentence, query, 0.01 * sen_len, lambda_value, IDF_w)
+  summary = makeSummary(sentences, bsent, best1sentence, query, 0.01 * sen_len, IDF_w)
   # print('summary') 
   return summary
 
@@ -133,24 +131,25 @@ def rakeQuery(lines):
 # Parameters	: file_name, name of the file in the document cluster
 # Return 		: list of sentence object
 #---------------------------------------------------------------------------------
-def processFile(file_name):
+def processFile(sessionID, input_sentences):
 
     # read file from provided folder path
-    f = open(file_name,'r')
-    text_0 = f.read()
+    # f = open(file_name,'r')
+    # text_0 = f.read()
 
     # replace all types of quotations by normal quotes
-    text_1 = re.sub("\n"," ",text_0)
+#     text_1 = re.sub("\n"," ",text_0)
 
-    text_1 = re.sub("\"","\"",text_1)
-    text_1 = re.sub("''","\"",text_1)
-    text_1 = re.sub("``","\"",text_1)
+#     text_1 = re.sub("\"","\"",text_1)
+#     text_1 = re.sub("''","\"",text_1)
+#     text_1 = re.sub("``","\"",text_1)
 
-    text_1 = re.sub(" +"," ",text_1)
+#     text_1 = re.sub(" +"," ",text_1)
 
-    # segment data into a list of sentences
-    sentence_token = nltk.data.load('tokenizers/punkt/english.pickle')
-    lines = sentence_token.tokenize(text_1.strip())
+#     # segment data into a list of sentences
+#     sentence_token = nltk.data.load('tokenizers/punkt/english.pickle')
+#     lines = sentence_token.tokenize(text_1.strip())
+    lines = input_sentences
 
 
     # setting the stemmer
@@ -174,7 +173,7 @@ def processFile(file_name):
         # list of sentence objects
 
         if stemmedSent != []:
-            sentences.append(sentence.sentence(file_name, stemmedSent, originalWords))
+            sentences.append(sentence.sentence(sessionID, stemmedSent, originalWords))
 
     return sentences
 
@@ -308,7 +307,7 @@ def sentenceSim(sentence1, sentence2, IDF_w):
 #				  IDF, IDF value of words in the document cluster 
 # Return 		: name 
 #---------------------------------------------------------------------------------
-def makeSummary(sentences, best_sentence, query, summary_length, lambta, IDF):	
+def makeSummary(sentences, bsent, best_sentence, query, summary_length, IDF):	
     summary = [best_sentence]
     # print(best_sentence.getPreProWords())
     # print('summary',summary)
@@ -327,7 +326,7 @@ def makeSummary(sentences, best_sentence, query, summary_length, lambta, IDF):
     rVal = {}
 
     for sent in sentences:
-        MMRval[sent], lVal[sent], rVal[sent] = MMRScore(sent, query, summary, lambta, IDF)
+        MMRval[sent], lVal[sent], rVal[sent] = MMRScore(sent, query, bsent, summary, IDF)
     # maxxer = max(MMRval, key=MMRval.get)
     # summary.append(maxxer)
     # sentences.remove(maxxer)
@@ -339,10 +338,10 @@ def makeSummary(sentences, best_sentence, query, summary_length, lambta, IDF):
         lScr.append(lVal[j])
         rScr.append(rVal[j])
     dff['sent'] = sentRan
-    dff['score'] = mmrScr
+    # dff['score'] = mmrScr
     dff['lscore'] = lScr
     dff['rscore'] = rScr
-    dff = dff.sort_values(by=['score'], ascending = False)
+    # dff = dff.sort_values(by=['score'], ascending = False)
     # return summary
     return dff
 
@@ -357,16 +356,18 @@ def makeSummary(sentences, best_sentence, query, summary_length, lambta, IDF):
 #				  IDF, IDF value for words in the cluster
 # Return 		: name 
 #---------------------------------------------------------------------------------
-def MMRScore(Si, query, Sj, lambta, IDF):	
+def MMRScore(Si, query, bsent, Sj, IDF):	
     Sim1 = sentenceSim(Si, query, IDF)
-    l_expr = lambta * Sim1
+    # l_expr = lambta * Sim1
+    l_expr = Sim1
     value = [float("-inf")]
     if len(bsent) > 0:
       for sent in Sj:
           Sim2 = sentenceSim(Si, sent, IDF)
           value.append(Sim2)
 
-      r_expr = (1-lambta) * max(value)
+      # r_expr = (1-lambta) * max(value)
+      r_expr = max(value)
       MMRScore = l_expr - r_expr
     else:
       MMRScore = l_expr
@@ -380,9 +381,10 @@ def MMRScore(Si, query, Sj, lambta, IDF):
 # Parameters	: sentences
 # Return 		: Sentence Object
 #---------------------------------------------------------------------------------
-def bestSenPrep(senta):
-  sentence_token = nltk.data.load('tokenizers/punkt/english.pickle')
-  lines = sentence_token.tokenize(senta.strip())
+def bestSenPrep(sessionID, senta):
+  # sentence_token = nltk.data.load('tokenizers/punkt/english.pickle')
+  # lines = sentence_token.tokenize(senta.strip())
+  lines = senta
   # setting the stemmer
   sentences = []
   porter = nltk.PorterStemmer()
@@ -399,53 +401,9 @@ def bestSenPrep(senta):
           and x!='!' and x!='''"''' and x!="''" and x!="'s", stemmedSent))
       # list of sentence objects
       if stemmedSent != []:
-          sentences.append(sentence.sentence(input_file_path, stemmedSent, originalWords))
+          sentences.append(sentence.sentence(sessionID, stemmedSent, originalWords))
   return sentences
 
-
-def summy_generator(self, input_file_path, query_keywords, lambda_value, bsent):
-
-  # # Input Query
-  # input_query = 'moderna'
-
-  # # Enter the selected summary sentence
-  # bsent = 'Both Moderna and Pfizer require two initial doses, separated by about a month.'
-
-  # # Select Lambda
-  # lambda_value = 0.5
-
-  # Run MMR Ranking
-  #---------------------------------------------------------------------------------
-  # Description	: Code block that runs individual functions required to compute the MMR Score
-  # Outputs 		: Table with sentences and their related scores computed by MMR
-  #---------------------------------------------------------------------------------
-  sentences = []
-  lines=[]
-  queryWords = []
-
-  sentences = sentences + processFile(input_file_path)
-  lines = lines + returnLines(input_file_path)
-  linestring = " "
-  for line in lines:
-      linestring = linestring + " " + line + " "
-  sen_len = len(linestring)
-  # calculate TF, IDF and TF-IDF scores
-  IDF_w 		= IDFs(sentences)
-  TF_IDF_w 	= TF_IDF(sentences)
-
-  # build query; set the number of words to include in our query
-  queryWords.append(input_query)
-  query = sentence.sentence("query", queryWords, queryWords)
-
-  # pick a sentence that best matches the query
-  # bstsen = 'Both Moderna and Pfizer require two initial doses, separated by about a month.'
-  if len(bsent) <1:
-    best1sentence = bsent
-  else: 
-    best1sentence = bestSenPrep(bsent)[0]
-  # build summary by adding more relevant sentences
-  summary = makeSummary(sentences, best1sentence, query, 0.01 * sen_len, lambda_value, IDF_w)
-  print('summary')
 
 # -------------------------------------------------------------
 #	MAIN FUNCTION
