@@ -1,4 +1,7 @@
 <!DOCTYPE html>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/slim-select/1.27.0/slimselect.min.js"></script>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/slim-select/1.27.0/slimselect.min.css" rel="stylesheet"></link>
+
 <html>
   <head>
     <title>MMR-Assisted Summarization</title>
@@ -15,32 +18,27 @@
       crossorigin="anonymous"
     />
   </head>
-  <body>
-    
-        <!-- Button trigger modal -->
-    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
-      Launch static backdrop modal
-    </button>
+  <!--Upload text Modal--->
+  <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="False">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="staticBackdropLabel">Copy the text you want to summarize here to get started </h5>
+              <button type="button" id="btn-modal-close" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <textarea class="form-control" placeholder="Raw Document" id="rawdoctextarea" style="height:400px;"></textarea>
+            </div>
+            <div class="modal-footer">
 
-    <!-- Modal -->
-    <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="staticBackdropLabel">Modal title</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body">
-            ...
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-            <button type="button" class="btn btn-primary">Understood</button>
+              <button type="button" id = "upload_button_modal" class="btn btn-primary" >Upload</button>
+            </div>
           </div>
         </div>
-      </div>
-    </div>
-    <header>
+  </div>
+  <body>
+    
+    
       <div class="container-md py-3">
         <h1 class="text-center">
           Interactive Text Summarization using Explorable MMR
@@ -54,30 +52,40 @@
       https://getbootstrap.com/docs/5.1/layout/grid/
       https://getbootstrap.com/docs/5.1/layout/gutters/
       -->
+      <!-- Button trigger modal -->
+      
 
+      
       <div class="container-md px-4 py-5 border">
         <!-- TOP ROW (query, lambda slider, rank button) -->
         <div class="row gx-2 py-3">
 
           <div class="col-md-2">
             <div class="p-1">
-              <button type="text" id="upload-button" class="btn btn-primary mb-3">
+              
+              <button type="text" id="upload-button" class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
                 Upload
               </button>
+            
             </div>
           </div>
 
           <div class="col-md-3">
             <div class="p-1">
               <div class="row">
-                <div class="col-2">
-                  <label for="keywordQuery" class="col-form-label">Query</label>
+                <div class="col-10" >
+                  <label for="query" class="col-form-label">Query</label>
+                  <select id="query" multiple width=400>
+                  </select>
                 </div>
-                <form autocomplete="off">
-                  <div class="autocomplete" style="width:400px;">
-                    <input id="myKeywords" type="text" name="myCountry" data-role="tagsinput" placeholder="vaccine, johnson" />
-                  </div>
-                </form>
+                
+                <!form autocomplete="off">
+                  
+                  <!div class="autocomplete" style="width:400px;">
+                    
+                    <!input id="myKeywords" type="text" name="myCountry" data-role="tagsinput" placeholder="vaccine, johnson" />
+                  <!/div>
+                <!/form>
               </div>
             </div>
           </div>
@@ -199,9 +207,10 @@
               </div> -->
             </div>
           </div>
-          <div class="col-md-1">
+          
+<!--           <div class="col-md-1"> -->
             <!-- Boy, do I not know why this works to center things vertically... -->
-            <div class="d-flex flex-column justify-content-center align-items-center lol-confusing-center">
+<!--             <div class="d-flex flex-column justify-content-center align-items-center lol-confusing-center">
               <div class="row">
                 <button type="text" id="candidate-to-summary" class="btn btn-primary btn-sm" disabled>→</button>
               </div>
@@ -210,11 +219,14 @@
               </div>
             </div>
           </div>
-          <div class="col-md-3">
+           -->
+          
+          <div class="col-md-4">
             <h3>Summary</h3>
             <div class="p-2 border summary-row" id="summary-view">
+              <div class="p-2 summary-default">Drag sentences here to create your summary. </div>
               <!-- TODO: Similarly, we need to add an X button or something -->
-              <div class="card">
+<!--               <div class="card">
                 <div class="card-body">
                   This is the first sentence of our summary!
                 </div>
@@ -223,7 +235,8 @@
                 <div class="card-body">
                   This is another important, yet diffrent sentence
                 </div>
-              </div>
+              </div> -->
+              
             </div>
           </div>
         </div> 

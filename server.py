@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+ #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 import os
 from flask import Flask, request, render_template, jsonify
@@ -23,25 +23,25 @@ app.secret = os.environ.get('SECRET')
 # want to recalculate.
 SESSIONS = {}
 # Here's an example of what SESSIONS might look like:
-'''
-SESSIONS = {
+''' 
+SESSIONS = {       
   "session_id1": {
-     "raw_document": "TEXT_BLOB",
-     "sentences": ["first sentence!", "second sentence.", ...],
+     "raw_document": "TEXT_BLOB", 
+     "sentences": [("first sentence!", 0), ("second sentence.",1), ...], # (sentence, ID)
      "keywords": [("keyword1", 143), ("keyword2", 391), ...],  # NOTE: I don't really know what this should look like
-  },
+  }, 
 }
 
 rank = {
-  "session_id1": {
-     "sentence": {
+     "sentence1_index": {
        "ID": "12"
-       "novelty_scr": "0.45"
-       "sim_scr": "0.38"
-     }
-  },
+       "text": "blah...."
+       "lsim": "0.45"  
+       "rsim": "0.38"
+     },
 }
 '''
+
 
 
 @app.after_request
@@ -62,13 +62,14 @@ def apply_kr_hello(response):
 @app.route('/')
 def homepage():
     """Displays the homepage."""
-    # TODO: use index.html when we're done testing the API.
+    # TODO: use intro.html when we're done testing the API.
     # return render_template('api_test.html')
-    return render_template('index.html')
+    # return render_template('index.html')
+    return render_template('intro.html')
 
     
 @app.route("/home")
-def home():
+def home(): 
   return render_template('index.html')
     
 @app.route('/test')
@@ -78,7 +79,7 @@ def apitest():
 
 @app.route('/upload', methods=['POST'])
 def upload():
-  '''
+  '''   
   Start a new session with a new document.
   
   Input:
@@ -98,7 +99,7 @@ def upload():
     paragraph_breaks: 
                 OPTIONAL: if it's easy to do, it'd be great to have a list of
                 all the sentence IDs that should have a paragraph break afterwards,
-                i.e. the IDs of the last sentence of each paragraph.
+                i.e. the IDs of the last sentence of each paragraph.  
   '''
   # TODO: Make sure the following line is commented out (or delete these two lines)
   # return jsonify({"session_id": "session1", "sentences": ["blahp", "blorp"]})
@@ -109,22 +110,16 @@ def upload():
   # This is the input: it's just a string that represents the document
   # !!!!!!
   input_data = request.json['rawdocument']
-  
-  # document_id can be used as a session_ID too
-  # document_id = request.json['doc_name'] + time.time()
-  sessionID = int(time.time()) #what are we doing with the sessionID again?
-  # input_file_path = '/public/data/'+document_id+'.json'
-  # input_path = 'public/data/COVIDVaccine_article.txt'
-
+  sessionID = int(time.time()) 
   keyw_r, sentences = mmr.keyword_generator(input_data)
-  print('keywords: ', keyw_r['word'], keyw_r['score'])
-  # print(sentences)
+  # print('keywords: ', keyw_r['word'], keyw_r['score'])
+
   # Output fields can go in "res"
   res = {
+    "raw_document": input_data,
     "session_id": sessionID,
     "sentences": sentences,
     "keywords": list(keyw_r.apply(lambda x: (x["word"],x["score"]), axis = 1)), # done - maybe only limit to the top n keywords
-    "paragraph_breaks": "TODO",
   }
   
   if 'rawdocument' not in request.json:
@@ -138,9 +133,7 @@ def upload():
      "keywords": keyw_r,  
   }
   print("number of sessions: ", len(SESSIONS))
-  document = request.json['rawdocument']
-  
-  # do stuff!
+  # print('keyword res:', res)
     
   return jsonify(res)
 
@@ -156,7 +149,7 @@ def rank():
     'session_id': The session_id to get the right sentence mapping.
     'keywords':   A list of the keywords to use in ranking.
     'summary':    A list of IDs of the sentences currently in the summary.
-    
+  
   Outputs JSON fields:
     'scores': A mapping from sentence ID to "Score" (see below)
   
@@ -168,20 +161,43 @@ def rank():
       - The individual keyword contributions
       
   If it's too much of a pain to get the keyword contributions, we can
-  just return: 
+  just return:  
     - The LH score (i.e. query relevance)
     - The RH score (i.e. summary difference)
-    
+  
   Of course, we can also take lambda as an argument, and then just
   return the raw score for each sentence. But: this limits what we can
   visualize on the front-end.
   '''
-  curr_session = SESSION
+  
   res = {}
   summary = []
-  mmr_scores = mmr_class.summary_generator(input_file_path, keywords, lambda_value, summary)
+  sentences = []
+  sessionID = int(request.json['session_id'])
+  keywords = request.json['keywords']
+  summaryIDs = request.json['summary']
+  curr_session = SESSIONS[sessionID]
+  for i,j in curr_session["sentences"]:
+    if j in summaryIDs:
+      summary.append(i)
+    else:
+      sentences.append(i)
+  print('summary', summary, summaryIDs)
+  mmr_scores = mmr.summy_generator(sessionID, sentences, keywords, summary)
   # sent, mmr score, LH score, RH score
-  print(mmr_scores['sent'], mmr_scores['score'], mmr_scores['lscore'], mmr_scores['rscore'])
+  
+  for index, out in mmr_scores.iterrows():
+    for se, id in curr_session["sentences"]:
+      
+      if out['sent'] == se:
+        mmr_scores.at[index, 'sentID'] = int(id)
+  
+  # res = mmr_scores.loc[:, ["sentID", 'lscore', 'rscore', 'sent']];
+  # res.set_index("sentID", inplace = True);
+  # res.columns =  [ "LSimScr", "RSimScr", "sentence"];
+  # res = res.to_dict()
+  res = mmr_scores.to_json(orient ='index')
+  print('pes', res)
   if not all(arg in request.json for arg in ('session_id', 'keywords', 'summary')):
     print("Malformed reuqest to '/rank' endpoint:", request.json)
     return jsonify({})
