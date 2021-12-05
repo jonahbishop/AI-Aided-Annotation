@@ -36,7 +36,7 @@ def keyword_generator(input_file_path):
   df = pd.DataFrame()
   df['word'] = wrd
   df['score'] = scr
-  df = df.sort_values(by=['score'], ascending=False).head(20)
+  df = df.sort_values(by=['score'], ascending=False)
   merged_list = [(lines[i], i) for i in range(0, len(lines))]
   return df, merged_list
 

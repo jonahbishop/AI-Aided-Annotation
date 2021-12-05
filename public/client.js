@@ -1,4 +1,4 @@
- import { DEMO_ARTICLE_TITLE, DEMO_ARTICLE_SENTENCES, DEMO_ARTICLE_TEXT } from "./demo_article.js";
+import { DEMO_ARTICLE_TEXT, DEMO_journal_article, DEMO_Legal_Reputation} from "./demo_article.js";
 import { TOP_SENTENCES } from "./top_sentences.js";
 import { autocomplete } from "./autocomplete.js";
 import { uploadDocument, rank } from "./api.js";
@@ -28,6 +28,13 @@ function getCurrentLambda() {
   return lambdaSlider.valueAsNumber / 100.0;
 }
 
+let useAlternateMMREquation = true;
+
+function mmrScore(sim1, sim2, lambda) {
+  return useAlternateMMREquation
+    ? lambda * sim1 - (1 - lambda) * sim2
+    : sim1 - (1 - lambda) * sim2;
+}
 
 
 
@@ -48,7 +55,7 @@ function onDropInSummarySection(ev) {
   
   // We need to redraw the summary and rerank :)
   view.renderSummary(summarySentences, rawSentences);
-  handleRerankClick();  // Need to rerank now that we have a new summary sentence
+  initiateRerank();  // Need to rerank now that we have a new summary sentence
 }
 
 // Moving a sentence from summary -> candidates
@@ -62,7 +69,7 @@ function onDropInCandidatesSection(ev) {
   candidateSentences.push({ID: sentenceID});
   
   view.renderSummary(summarySentences, rawSentences);
-  handleRerankClick();  // Need to rerank now that the summary sentences have changed.
+  initiateRerank();  // Need to rerank now that the summary sentences have changed.
 }
 
 
@@ -81,7 +88,7 @@ function handleLambdaChange() {
   // console.log("before candidates:", candidateSentences);
   
   candidateSentences = candidateSentences.map(s => {
-    s.score = lambda*s.lscore - (1-lambda)*s.rscore;
+    s.score = mmrScore(s.lscore, s.rscore, lambda);
     return s;
   });
   candidateSentences.sort((c1, c2) => (c1.score < c2.score ? 1 : (c1.score > c2.score ? -1 : 0)));
@@ -92,29 +99,31 @@ function handleLambdaChange() {
   });
   
   // console.log("after candidates:", candidateSentences);
-  view.renderCandidates(candidateSentences, lambda, rawSentences);
+  view.renderCandidates(candidateSentences, lambda, rawSentences, query_slimSelect.selected(), useAlternateMMREquation);
 }
 
 // This is called when we get back ranking results from the backend.
 function handleRerankResult(res) {
   res = JSON.parse(res);
+  // console.log(Object.values(res));
   
   if (candidateSentences.length < 1) {
     // i.e. we haven 't clicked "rank" yet for this document, and all the sentences are candidates with no previous scores. 
     candidateSentences = rawSentences.map((s, idx) => ({ID: idx}));
   }
-  
-  console.log("candidate sentences:", candidateSentences);
-  
+    
   let lambda = getCurrentLambda();
   let idToPreviousRank = new Map(candidateSentences.map(c => [c.ID, c.rank]));
   
-  candidateSentences = res["sen_scores"].map(s => ({
-    ID: s.sentenceID,
-    lscore: s.LSimScr,
-    rscore: s.RSimScr,
-    score: lambda*s.LSimScr - (1-lambda)*s.RSimScr,
-    prev_rank: idToPreviousRank.get(s.sentenceID),
+  
+  
+  candidateSentences = Object.values(res).map(s => ({
+  // candidateSentences = res["sen_scores"].map(s => ({
+    ID: parseInt(s.sentID),
+    lscore: s.lscore,
+    rscore: s.rscore,
+    score: mmrScore(s.lscore, s.rscore, lambda),
+    prev_rank: idToPreviousRank.get(parseInt(s.sentID)),
   }));
   candidateSentences.sort((c1, c2) => (c1.score < c2.score ? 1 : (c1.score > c2.score ? -1 : 0)));
   candidateSentences = candidateSentences.map((candidate, idx) => {
@@ -122,35 +131,26 @@ function handleRerankResult(res) {
     return candidate;
   });
   
-  view.renderCandidates(candidateSentences, lambda, rawSentences);
+  // console.log("Candidates before rendering: ", candidateSentences);
+  
+  view.renderCandidates(candidateSentences, lambda, rawSentences, query_slimSelect.selected(), useAlternateMMREquation);
 }
 
 // Ping the backend to get a new ranking.
-function handleRerankClick() {
+function initiateRerank() {
   
   if (sessionID === null) {
     alert("Please upload a document first!");
     return;
   }
-  
-  // TODO: delete when no longer needed
-  let mock_rank = (session, kws, summary, cb) => {
-    let res = {};
-    res["sen_scores"] = rawSentences
-      .filter((_, id) => !summary.includes(id))
-      .map((sentence, id) => ({
-        sentenceID: id,
-        LSimScr: Math.random(),
-        RSimScr: Math.random()
-      }));
-    cb(JSON.stringify(res));
-  };
-  
-  // TODO: switch to the real rank :)
-  mock_rank(sessionID, query_slimSelect.selected(), summarySentences, handleRerankResult);
+  console.log("reranking");
+  rank(sessionID, query_slimSelect.selected(), summarySentences, handleRerankResult);
 }
 
-
+function onKeywordsChange() {
+  if (candidateSentences.length < 1) return;
+  initiateRerank();
+}
 
 
 
@@ -217,6 +217,9 @@ let uploadClickHandler = function() {
     view.renderRawDocument(rawDocument, rawSentences);
     // discard current summary
     view.resetSummary();
+    
+    // Maybe we just rank then?
+    initiateRerank();
   };
   
   let uploadErrorFn = function(res) {
@@ -234,7 +237,14 @@ window.onload = function() {
   // Click the upload button on startup
   document.getElementById("upload-button").click();
   
-  document.getElementById("rawdoctextarea").value = DEMO_ARTICLE_TEXT;  // TODO: get rid of this, or change it to be a button
+  for (let [id, txt] of [["demo-1", DEMO_ARTICLE_TEXT], ["demo-2", DEMO_journal_article], ["demo-3", DEMO_Legal_Reputation]]) {
+    document.getElementById(id).onclick = ()=>{
+      document.getElementById("rawdoctextarea").value = txt;
+    };
+  }
+    
+  
+  // document.getElementById("rawdoctextarea").value = DEMO_ARTICLE_TEXT;  // TODO: get rid of this, or change it to be a button
   
   view = new View(
     document.getElementById("document-view"),
@@ -249,14 +259,30 @@ window.onload = function() {
   let lambdaSlider = document.getElementById("lambdaSlider");
   lambdaSlider.onchange = handleLambdaChange;
 
-  let rankButton = document.getElementById("rank-button");
-  rankButton.onclick = handleRerankClick;
+  // We don't really need a button, because every action triggers a rerank.
+  // Note: We could have done this differently, but that's harder :)
+  // let rankButton = document.getElementById("rank-button");
+  // rankButton.onclick = initiateRerank;
+  
+  let exportButton = document.getElementById("export-button");
+  exportButton.onclick = () => alert("Export not implemented :)");
+
   
   document.getElementById("summary-view").ondragover = (ev => ev.preventDefault());
   document.getElementById("summary-view").ondrop = onDropInSummarySection;
   
   document.getElementById("ranking-view").ondragover = (ev => ev.preventDefault());
   document.getElementById("ranking-view").ondrop = onDropInCandidatesSection;
+  
+  query_slimSelect.onChange = onKeywordsChange;
+  
+  
+  
+  let mmrVersionSelect = document.getElementById("mmr-version");
+  mmrVersionSelect.onchange = () => {
+    useAlternateMMREquation = mmrVersionSelect.value !== '2';
+    handleLambdaChange();
+  };
 
 
 

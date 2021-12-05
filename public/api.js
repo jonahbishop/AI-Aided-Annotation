@@ -10,7 +10,7 @@ export function uploadDocument(doc, cb, errorCb) {
   xhr.onreadystatechange = function() {
     if (xhr.readyState !== 4) return;
     
-    console.log("Response from '/upload' request:\n", xhr.response);
+    // console.log("Response from '/upload' request:\n", xhr.response);
     
     if (xhr.status == 200) {
       cb(xhr.responseText);
@@ -39,7 +39,7 @@ export function rank(sessionId, keywords, summary, cb, errorCb) {
   xhr.onreadystatechange = function() { 
     if (xhr.readyState !== 4) return;
     
-    console.log("Response from '/rank' request:\n", xhr.response);
+    // console.log("Response from '/rank' request:\n", xhr.response);
 
     if (xhr.status == 200) {
       cb(xhr.responseText);
@@ -53,7 +53,7 @@ export function rank(sessionId, keywords, summary, cb, errorCb) {
     keywords: keywords,
     summary: summary
   });
-  console.log("Sending the following to the '/rank' endpoint:\n", JSON.parse(payload));
+  // console.log("Sending the following to the '/rank' endpoint:\n", JSON.parse(payload));
   // console.log(payload);
   xhr.send(payload);
 

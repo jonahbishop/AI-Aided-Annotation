@@ -16,15 +16,13 @@ app = Flask(__name__, static_folder='public', template_folder='views')
 # Set the app secret key from the secret environment variables.
 app.secret = os.environ.get('SECRET')
 
-
-
 # SESSIONS maps a unique ID to all the saved information for a document,
 # i.e. the parsed sentences, and whatever else we might need and don't
 # want to recalculate.
 SESSIONS = {}
 # Here's an example of what SESSIONS might look like:
-''' 
-SESSIONS = {       
+'''   
+SESSIONS = {  
   "session_id1": {
      "raw_document": "TEXT_BLOB", 
      "sentences": [("first sentence!", 0), ("second sentence.",1), ...], # (sentence, ID)
@@ -203,8 +201,8 @@ def rank():
     return jsonify({})
   
   # TODO: populate res with the scores for each sentence (excluding the summary sentences)
-  
-  return jsonify(res)
+  return res
+  # return jsonify(res)
   
 
 if __name__ == '__main__':
