@@ -8,9 +8,35 @@
   height: 600px;
 }
 
+rect {
+  fill: green;
+}
+
 .autocomplete {
   /*the container must be positioned relative:*/
   position: relative;
+  display: inline-block;
+}
+
+.kw-rank {
+  background-color: #ffef00a3;
+}
+
+#export-button {
+  font-size: small;
+  text-align: right;
+  color: blue;
+  
+  float: right;
+  padding-top: 8px;
+  padding-right: 5px;
+}
+
+#export-button:hover {
+  cursor: pointer;
+}
+
+#summary-header {
   display: inline-block;
 }
 
