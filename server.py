@@ -22,7 +22,7 @@ app.secret = os.environ.get('SECRET')
 SESSIONS = {}
 # Here's an example of what SESSIONS might look like:
 '''   
-SESSIONS = {  
+SESSIONS = {
   "session_id1": {
      "raw_document": "TEXT_BLOB", 
      "sentences": [("first sentence!", 0), ("second sentence.",1), ...], # (sentence, ID)
