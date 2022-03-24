@@ -8,13 +8,25 @@ import re
 import time
 import pandas as pd
 import mmr
-
-
+from flask import redirect
+from flask_login import login_required, current_user, login_user, logout_user
+from models import UserModel,db,login
+import secrets 
 
 # Support for gomix's 'front-end' and 'back-end' UI. 
 app = Flask(__name__, static_folder='public', template_folder='views')
 # Set the app secret key from the secret environment variables.
 app.secret = os.environ.get('SECRET')
+secret = secrets.token_urlsafe(32)
+app.secret_key = secret
+
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+ 
+ 
+db.init_app(app)
+login.init_app(app)
+login.login_view = 'login'
 
 # SESSIONS maps a unique ID to all the saved information for a document,
 # i.e. the parsed sentences, and whatever else we might need and don't
@@ -39,8 +51,56 @@ rank = {
      },
 }
 '''
-
-
+ 
+@app.before_first_request
+def create_all():
+    db.create_all()
+     
+@app.route('/home')
+@login_required
+def blog():
+    return render_template('blog.html')
+ 
+ 
+@app.route('/login', methods = ['POST', 'GET'])
+def login():
+    if current_user.is_authenticated:
+        return redirect('/home')
+     
+    if request.method == 'POST':
+        email = request.form['email']
+        user = UserModel.query.filter_by(email = email).first()
+        if user is not None and user.check_password(request.form['password']):
+            login_user(user)
+            return redirect('/home')
+     
+    return render_template('login.html')
+ 
+@app.route('/register', methods=['POST', 'GET'])
+def register():
+    if current_user.is_authenticated:
+        return redirect('/home')
+     
+    if request.method == 'POST':
+        email = request.form['email']
+        username = request.form['username']
+        password = request.form['password']
+ 
+        if UserModel.query.filter_by(email=email).first():
+            return ('Email already Present')
+             
+        user = UserModel(email=email, username=username)
+        user.set_password(password)
+        db.session.add(user)
+        db.session.commit()
+        return redirect('/login')
+    return render_template('register.html')
+ 
+ 
+@app.route('/logout')
+def logout():
+    logout_user()
+    return redirect('/home')
 
 @app.after_request
 def apply_kr_hello(response):
@@ -67,6 +127,7 @@ def homepage():
 
     
 @app.route("/home")
+@login_required
 def home(): 
   return render_template('index.html')
     
@@ -203,7 +264,3 @@ def rank():
   # TODO: populate res with the scores for each sentence (excluding the summary sentences)
   return res
   # return jsonify(res)
-  
-
-if __name__ == '__main__':
-    app.run()
