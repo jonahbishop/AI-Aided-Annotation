@@ -1,17 +1,13 @@
  #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 import os
-from flask import Flask, request, render_template, jsonify
-from flask_restful import Resource, Api
-import test
-import re
+from flask import Flask, request, render_template, jsonify, session, url_for
 import time
-import pandas as pd
 import mmr
 from flask import redirect
-from flask_login import login_required, current_user, login_user, logout_user
-from models import UserModel,db,login
-import secrets 
+import secrets
+import pymongo
+import bcrypt
 
 # Support for gomix's 'front-end' and 'back-end' UI. 
 app = Flask(__name__, static_folder='public', template_folder='views')
@@ -20,13 +16,13 @@ app.secret = os.environ.get('SECRET')
 secret = secrets.token_urlsafe(32)
 app.secret_key = secret
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+#connect to your Mongo DB database
+client = pymongo.MongoClient()
  
- 
-db.init_app(app)
-login.init_app(app)
-login.login_view = 'login'
+#get the database name
+db = client.get_database('total_records')
+#get the particular collection that contains the data
+records = db.register
 
 # SESSIONS maps a unique ID to all the saved information for a document,
 # i.e. the parsed sentences, and whatever else we might need and don't
@@ -52,55 +48,89 @@ rank = {
 }
 '''
  
-@app.before_first_request
-def create_all():
-    db.create_all()
-     
-@app.route('/home')
-@login_required
-def blog():
-    return render_template('blog.html')
- 
- 
-@app.route('/login', methods = ['POST', 'GET'])
+@app.route("/login", methods=["POST", "GET"])
 def login():
-    if current_user.is_authenticated:
-        return redirect('/home')
-     
-    if request.method == 'POST':
-        email = request.form['email']
-        user = UserModel.query.filter_by(email = email).first()
-        if user is not None and user.check_password(request.form['password']):
-            login_user(user)
-            return redirect('/home')
-     
-    return render_template('login.html')
+    message = 'Please login to your account'
+    if "email" in session:
+        return redirect(url_for("home"))
+
+    if request.method == "POST":
+        email = request.form.get("email")
+        password = request.form.get("password")
+
+        #check if email exists in database
+        email_found = records.find_one({"email": email})
+        if email_found:
+            email_val = email_found['email']
+            passwordcheck = email_found['password']
+            #encode the password and check if it matches
+            if bcrypt.checkpw(password.encode('utf-8'), passwordcheck):
+                session["email"] = email_val
+                return redirect(url_for('home'))
+            else:
+                if "email" in session:
+                    return redirect(url_for("home"))
+                message = 'Wrong password'
+                return render_template('login.html', message=message)
+        else:
+            message = 'Email not found'
+            return render_template('login.html', message=message)
+    return render_template('login.html', message=message)
  
-@app.route('/register', methods=['POST', 'GET'])
+#assign URLs to have a particular route 
+@app.route("/register", methods=['post', 'get'])
 def register():
-    if current_user.is_authenticated:
-        return redirect('/home')
-     
-    if request.method == 'POST':
-        email = request.form['email']
-        username = request.form['username']
-        password = request.form['password']
- 
-        if UserModel.query.filter_by(email=email).first():
-            return ('Email already Present')
-             
-        user = UserModel(email=email, username=username)
-        user.set_password(password)
-        db.session.add(user)
-        db.session.commit()
-        return redirect('/login')
+    message = ''
+    #if method post in index
+    if "email" in session:
+      return redirect(url_for("home"))
+    if request.method == "POST":
+      user = request.form.get("fullname")
+      email = request.form.get("email")
+      password1 = request.form.get("password1")
+      password2 = request.form.get("password2")
+      #if found in database showcase that it's found 
+      user_found = records.find_one({"name": user})
+      email_found = records.find_one({"email": email})
+      if user_found:
+          message = 'There already is a user by that name'
+          return render_template('register.html', message=message)
+      if email_found:
+          message = 'This email already exists in database'
+          return render_template('register.html', message=message)
+      if password1 != password2:
+          message = 'Passwords should match!'
+          return render_template('register.html', message=message)
+      else:
+          #hash the password and encode it
+          hashed = bcrypt.hashpw(password2.encode('utf-8'), bcrypt.gensalt())
+          #assing them in a dictionary in key value pairs
+          user_input = {'name': user, 'email': email, 'password': hashed}
+          #insert it in the record collection
+          records.insert_one(user_input)
+          
+          #find the new created account and its email
+          user_data = records.find_one({"email": email})
+          new_email = user_data['email']
+          #if registered redirect to logged in as the registered user
+          return render_template('index.html')
     return render_template('register.html')
+
+@app.route('/logged_in')
+def logged_in():
+    if "email" in session:
+        email = session["email"]
+        return render_template('index.html', email=email)
+    else:
+        return redirect(url_for("login"))
  
- 
-@app.route('/logout')
+@app.route("/logout", methods=["POST", "GET"])
 def logout():
-    logout_user()
-    return redirect('/home')
+    if "email" in session:
+        session.pop("email", None)
+        return render_template("signout.html")
+    else:
+        return render_template('register.html')
 
 @app.after_request
 def apply_kr_hello(response):
@@ -127,9 +157,12 @@ def homepage():
 
     
 @app.route("/home")
-@login_required
 def home(): 
-  return render_template('index.html')
+  if "email" in session:
+    email = session["email"]
+    return render_template('index.html', email=email)
+  else:
+    return redirect(url_for("login"))
     
 @app.route('/test')
 def apitest():
