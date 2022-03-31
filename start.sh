@@ -26,5 +26,8 @@ python3 server.py
 # # Install the requirements
 # $VIRTUALENV/bin/pip install -r requirements.txt
 
+# # Start the MongoDB service
+# sudo systemctl start mongodb
+
 # # Run a glorious Python 3 server
 # $VIRTUALENV/bin/python3 server.py

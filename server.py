@@ -1,10 +1,9 @@
  #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 import os
-from flask import Flask, request, render_template, jsonify, session, url_for
+from flask import Flask, request, render_template, jsonify, session, url_for, redirect
 import time
 import mmr
-from flask import redirect
 import secrets
 import pymongo
 import bcrypt
