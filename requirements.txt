@@ -3,4 +3,5 @@ flask_restful
 gunicorn
 rake-nltk
 nltk
+pandas
 pymongo

@@ -18,52 +18,29 @@ import pandas as pd
 
   # Function to return lines to calculate the overall length and for input to RAKE
     
-    
-def keyword_generator(input_file_path):
+_stop_words = set(stopwords.words('english'))
+def keyword_generator(sentences):
+  """Expects list of sanitized tokenized sentences"""
+  query2 = rakeQuery(sentences)
+  my_filter = lambda tple : tple[0].isalnum() and not tple[0].isdigit() and len(tple[0]) > 3 and tple[0] not in _stop_words
+  sorted_pairs = [tple for tple in filter(my_filter, query2.most_common(len(query2)))]
+  return sorted_pairs
 
-  # input_file_path = 'public/data/COVIDVaccine_article.txt'
-  # Top words recommended by the system to form a Query
-  lines=[]
-  lines = lines + returnLines(input_file_path)
-  stop_words = set(stopwords.words('english'))
-  query2 = rakeQuery(lines)
-  wrd = []
-  scr = []
-  for rt in query2:
-    if rt.isalnum() and (not rt.isdigit()) and len(rt) > 3 and (not rt in stop_words):
-      wrd.append(rt)
-      scr.append(query2[rt])
-  df = pd.DataFrame()
-  df['word'] = wrd
-  df['score'] = scr
-  df = df.sort_values(by=['score'], ascending=False)
-  merged_list = [(lines[i], i) for i in range(0, len(lines))]
-  return df, merged_list
+sanitizer = {"\n": " ", "''": "\"", "``":"\"", " +":" "}
+def sanitize(sent):
+  """Not complete sanitization method, but it's the one they were using"""
+  for dirty, clean in sanitizer.items():
+    sent = sent.replace(dirty, clean)
+  return sent.strip()
 
-def returnLines(file_name):
+def tokenize_sentences(document):
+  """
+  Breaks up document by sentence. Document should be a single string. Can be unsanitized.
+  Returns santized broken up sentences
+  """
+  return nltk.tokenize.sent_tokenize(sanitize(document))
 
-  # read file from provided folder path
-
-  # f = open(file_name,'r')
-  # text_0 = f.read()
-  text_0 = file_name
-
-  # replace all types of quotations by normal quotes
-  text_1 = re.sub("\n"," ",text_0)
-
-  text_1 = re.sub("\"","\"",text_1)
-  text_1 = re.sub("''","\"",text_1)
-  text_1 = re.sub("``","\"",text_1)
-
-  text_1 = re.sub(" +"," ",text_1)
-
-  # segment data into a list of sentences
-  sentence_token = nltk.data.load('tokenizers/punkt/english.pickle')
-  lines = sentence_token.tokenize(text_1.strip())
-
-  return lines
-
-def summy_generator(sessionID, input_sentences, input_query, bsent):
+def summary_generator(sessionID, input_sentences, input_query, bsent):
 
   # Run MMR Ranking
   #---------------------------------------------------------------------------------
@@ -404,6 +381,14 @@ def bestSenPrep(sessionID, senta):
           sentences.append(sentence.sentence(sessionID, stemmedSent, originalWords))
   return sentences
 
+if __name__ =="__main__":
+  doc = open("public/data/COVIDVaccine_article.txt", "r", encoding="utf-8").read()
+  sentences = tokenize_sentences(doc)
+  keyw_r = keyword_generator(sentences)
+
+  stored_sentences = [(sentences[i], i) for i in range(0, len(sentences))]
+  # keyword_generator(doc)
+
 
 # -------------------------------------------------------------
 #	MAIN FUNCTION
@@ -415,12 +400,12 @@ def bestSenPrep(sessionID, senta):
   
 #   lines=[]
 #   lines = lines + returnLines(input_file_path)
-#   stop_words = set(stopwords.words('english'))
+#   _stop_words = set(stopwords.words('english'))
 #   query2 = rakeQuery(lines)
 #   wrd = []
 #   scr = []
 #   for rt in query2:
-#     if rt.isalnum() and (not rt.isdigit()) and len(rt) > 3 and (not rt in stop_words):
+#     if rt.isalnum() and (not rt.isdigit()) and len(rt) > 3 and (not rt in _stop_words):
 #       wrd.append(rt)
 #       scr.append(query2[rt])
 #   df = pd.DataFrame()
