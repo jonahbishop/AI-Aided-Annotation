@@ -17,7 +17,7 @@ app.secret_key = secret
 
 #connect to your Mongo DB database
 client = pymongo.MongoClient()
- 
+
 #get the database name
 db = client.get_database('total_records')
 #get the particular collection that contains the data
@@ -46,7 +46,7 @@ rank = {
      },
 }
 '''
- 
+
 @app.route("/login", methods=["POST", "GET"])
 def login():
     message = 'Please login to your account'
@@ -75,8 +75,8 @@ def login():
             message = 'Email not found'
             return render_template('login.html', message=message)
     return render_template('login.html', message=message)
- 
-#assign URLs to have a particular route 
+
+#assign URLs to have a particular route
 @app.route("/register", methods=['post', 'get'])
 def register():
     message = ''
@@ -88,7 +88,7 @@ def register():
       email = request.form.get("email")
       password1 = request.form.get("password1")
       password2 = request.form.get("password2")
-      #if found in database showcase that it's found 
+      #if found in database showcase that it's found
       user_found = records.find_one({"name": user})
       email_found = records.find_one({"email": email})
       if user_found:
@@ -107,7 +107,7 @@ def register():
           user_input = {'name': user, 'email': email, 'password': hashed}
           #insert it in the record collection
           records.insert_one(user_input)
-          
+
           #find the new created account and its email
           user_data = records.find_one({"email": email})
           new_email = user_data['email']
@@ -122,7 +122,7 @@ def logged_in():
         return render_template('index.html', email=email)
     else:
         return redirect(url_for("login"))
- 
+
 @app.route("/logout", methods=["POST", "GET"])
 def logout():
     if "email" in session:
@@ -201,18 +201,19 @@ def upload():
   # This is the input: it's just a string that represents the document
   # !!!!!!
   input_data = request.json['rawdocument']
-  sessionID = int(time.time()) 
-  keyw_r, sentences = mmr.keyword_generator(input_data)
+  sessionID = int(time.time())
+  sentences = mmr.tokenize_sentences(input_data)
+  keyw_r = mmr.keyword_generator(sentences)
   # print('keywords: ', keyw_r['word'], keyw_r['score'])
-
+  bad_sentences =[(sentences[i], i) for i in range(0, len(sentences))]#This seems unnecessary, please get rid of this, future Isaac
   # Output fields can go in "res"
   res = {
     "raw_document": input_data,
     "session_id": sessionID,
-    "sentences": sentences,
-    "keywords": list(keyw_r.apply(lambda x: (x["word"],x["score"]), axis = 1)), # done - maybe only limit to the top n keywords
+    "sentences": bad_sentences,
+    "keywords": keyw_r,#list(keyw_r.apply(lambda x: (x["word"],x["score"]), axis = 1)), # done - maybe only limit to the top n keywords
   }
-  
+
   if 'rawdocument' not in request.json:
     print("malformed '/upload' request!")
     return jsonify({})
@@ -220,7 +221,7 @@ def upload():
   
   SESSIONS[sessionID] = {
      "raw_document": input_data,
-     "sentences": sentences,
+     "sentences": bad_sentences,
      "keywords": keyw_r,  
   }
   print("number of sessions: ", len(SESSIONS))
@@ -228,7 +229,8 @@ def upload():
     
   return jsonify(res)
 
-
+# @app.route('/rank', methods=['POST'])
+# def udpate_jeopardy():
 
 
 @app.route('/rank', methods=['POST'])
@@ -274,7 +276,7 @@ def rank():
     else:
       sentences.append(i)
   print('summary', summary, summaryIDs)
-  mmr_scores = mmr.summy_generator(sessionID, sentences, keywords, summary)
+  mmr_scores = mmr.summary_generator(sessionID, sentences, keywords, summary)
   # sent, mmr score, LH score, RH score
   
   for index, out in mmr_scores.iterrows():
@@ -296,3 +298,7 @@ def rank():
   # TODO: populate res with the scores for each sentence (excluding the summary sentences)
   return res
   # return jsonify(res)
+
+
+if __name__ == '__main__':
+    app.run()
