@@ -1,18 +1,16 @@
 // The "View" class handles how to render stuff to the page.
 
 export class View {
-    constructor(rawDocumentContainer, candidatesContainer, summaryContainer, keywordsContainer) {
+    constructor(rawDocumentContainer, candidatesContainer, summaryContainer, generatedSummaryContainer, dataContainer) {
         this.rawDocumentContainer = rawDocumentContainer;
         this.candidatesContainer = candidatesContainer;
         this.summaryContainer = summaryContainer;
-
-        this.keywordsContainer = keywordsContainer; // NOTE: this might be handled differently w/ that library
+        this.generatedSummaryContainer = generatedSummaryContainer;
+        this.dataContainer = dataContainer;
 
         // TODO: add mappings from sentence ID -> div/span/etc. so that we can easily "select" or "deselect" a sentence, or otherwise
         // highlight it. These can be populated whenever we call renderCandidates, renderRawDocuemnt, and renderSummary.
         this.candidateIDToContainer = {};
-        this.summaryIDToContainer = {};
-
     }
 
     renderRawDocument(rawDocument, sentences) {
@@ -250,9 +248,51 @@ export class View {
 
     // summarySentences: List[IDs]
     // rawSentences: List[Text]  (index is ID)
+    renderGeneratedSummary(summarySentences, rawSentences) {
+        this.generatedSummaryContainer.innerHTML = ""; // reset the container
+        this.dataContainer.innerHTML = ""; // reset the container
+
+        for (let sentenceID of summarySentences) {
+
+            let outer = document.createElement("div");
+            outer.classList.add("card");
+            outer.classList.add("candidate-card");
+            this.candidateIDToContainer[sentenceID] = outer;
+
+            // TODO: implement selection
+            outer.addEventListener("click", function() { console.log("clicked: ", sentenceID) }, true);
+
+            let inner = document.createElement("div");
+            inner.classList.add("card-body");
+
+            let text = document.createTextNode(rawSentences[sentenceID]);
+
+            // Assemble!
+            this.generatedSummaryContainer.appendChild(outer);
+            outer.appendChild(inner);
+            inner.appendChild(text);
+
+            let outer2 = document.createElement("div");
+            outer2.classList.add("card");
+            outer2.classList.add("data-card");
+
+            let inner2 = document.createElement("textarea");
+            inner2.classList.add("card-body");
+            inner2.style.width = "100%";
+            inner2.setAttribute("style", "height:" + inner.offsetHeight + "px")
+
+            //document.getElementById('div_register').setAttribute("style","width:500px");
+            outer2.setAttribute("style", "height:" + outer.offsetHeight + "px")
+
+            this.dataContainer.appendChild(outer2);
+            outer2.appendChild(inner2);
+        }
+    }
+
+    // summarySentences: List[IDs]
+    // rawSentences: List[Text]  (index is ID)
     renderSummary(summarySentences, rawSentences) {
         this.summaryContainer.innerHTML = ""; // reset the container
-        this.summaryIDToContainer = {};
 
         for (let sentenceID of summarySentences) {
 

@@ -102,6 +102,16 @@ let autoPopulateHandler = function() {
     }
 }
 
+let nextButtonHandler = function() {
+
+    console.log("Next Pressed")
+
+    const element = document.getElementById("bottom-row");
+    element.scrollIntoView()
+
+    view.renderGeneratedSummary(summarySentences, rawSentences);
+}
+
 
 /////////////////////////////////
 // Functions dealing w/ ranking
@@ -274,7 +284,9 @@ window.onload = function() {
     view = new View(
         document.getElementById("document-view"),
         document.getElementById("ranking-view"),
-        document.getElementById("summary-view"));
+        document.getElementById("summary-view"),
+        document.getElementById("generated-summary-view"),
+        document.getElementById("data-view"));
 
     let uploadButtonModal = document.getElementById("upload_button_modal");
     uploadButtonModal.onclick = uploadClickHandler;
@@ -285,6 +297,9 @@ window.onload = function() {
     let autoPopulateButton = document.getElementById("auto-populate-button");
     autoPopulateButton.onclick = autoPopulateHandler;
 
+    let nextButton = document.getElementById("next-button");
+    nextButton.onclick = nextButtonHandler;
+
     document.getElementById("summary-view").ondragover = (ev => ev.preventDefault());
     document.getElementById("summary-view").ondrop = onDropInSummarySection;
 
@@ -292,8 +307,6 @@ window.onload = function() {
     document.getElementById("ranking-view").ondrop = onDropInCandidatesSection;
 
     query_slimSelect.onChange = onKeywordsChange;
-
-
 
     let mmrVersionSelect = document.getElementById("mmr-version");
     mmrVersionSelect.onchange = () => {
