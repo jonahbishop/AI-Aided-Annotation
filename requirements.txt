@@ -5,3 +5,4 @@ rake-nltk
 nltk
 pandas
 pymongo
+bcrypt
