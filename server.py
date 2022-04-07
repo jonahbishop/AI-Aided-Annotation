@@ -243,7 +243,7 @@ def phase_two():
                   easily. Additionally, if we find that sending the full sentences is too much, I can convert them back
                   into sentence IDs before sending the packet.
   """
-  return jsonify(_testable_phase_two(int(request.json['session_id']), request.json['top_sentences']))
+  return jsonify({"Similar Sentences": _testable_phase_two(int(request.json['session_id']), request.json['top_sentences'])})
 
 
 def _testable_phase_two(sessionID, top_sentence_IDs, n=mmr.N_SIM_SENTENCES):
