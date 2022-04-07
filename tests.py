@@ -39,7 +39,7 @@ def test_server_cloud(data = DATA, top_sentence_IDs = None):
   result = server._testable_phase_two(sessionID, top_sentence_IDs)
   print("---------------------\nTesting Results:\n---------------------")
   for top in result:
-    print("\n\t+ ".join([top, *result[top]]))
+    print("\n\t+ ".join([str(top), *[str(x) for x in result[top]]]))
 
 if __name__ == '__main__':
   test_server_cloud()
