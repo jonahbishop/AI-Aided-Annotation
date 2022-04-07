@@ -264,7 +264,12 @@ def _testable_phase_two(sessionID, top_sentence_IDs, n=mmr.N_SIM_SENTENCES):
   top_sentences = [all_sent_objs[x] for x in top_sentence_IDs]
   other_sentences = [all_sent_objs[x] for x in range(len(all_sent_objs)) if x not in top_sentence_IDs]
   sim_sentences = mmr.n_sim_sentences(top_sentences, other_sentences, all_sent_objs , n=n)
-  print("Sim_sentences:\n", sim_sentences)
+  print("Sim_sentences {str:[str]}:\n", sim_sentences)
+  IDify = lambda sent : all_sent_objs.index(sent) if isinstance(sent, str) else list(map(IDify, sent)) #This works even though it's a str-sentence comparison because I
+  #overrode sentence's __eq__
+  sim_sentences = {IDify(key) : IDify(val) for key, val in sim_sentences.items()} #O(n) calls to O(n) IDify, could be
+  #reduced to nlogn with an ID lookup table
+  print("\nSim_sentences {int:[int]}:\n", sim_sentences)
   return sim_sentences
 
 
