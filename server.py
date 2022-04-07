@@ -145,7 +145,7 @@ def apply_kr_hello(response):
     return response
 
 
-  
+
 @app.route('/')
 def homepage():
     """Displays the homepage."""
@@ -154,15 +154,15 @@ def homepage():
     # return render_template('index.html')
     return render_template('intro.html')
 
-    
+
 @app.route("/home")
-def home(): 
+def home():
   if "email" in session:
     email = session["email"]
     return render_template('index.html', email=email)
   else:
     return redirect(url_for("login"))
-    
+
 @app.route('/test')
 def apitest():
   """Displays a page to test the API"""
@@ -170,12 +170,12 @@ def apitest():
 
 @app.route('/upload', methods=['POST'])
 def upload():
-  '''   
+  '''
   Start a new session with a new document.
-  
+
   Input:
     request.json['rawdocument']: contains the document's raw text
-    
+
   Output JSON fields:
     session_id: A unique ID that should be used in subsequent "rank"
                 requests, so that we can refer to sentences by their IDs
@@ -187,16 +187,16 @@ def upload():
     keywords:   A list of (keyword, score) tuples extracted from the document.
                 Score can be raw frequency, or whatever else, so long as it can
                 be used to rank the keywords.
-    paragraph_breaks: 
+    paragraph_breaks:
                 OPTIONAL: if it's easy to do, it'd be great to have a list of
                 all the sentence IDs that should have a paragraph break afterwards,
-                i.e. the IDs of the last sentence of each paragraph.  
+                i.e. the IDs of the last sentence of each paragraph.
   '''
   # TODO: Make sure the following line is commented out (or delete these two lines)
   # return jsonify({"session_id": "session1", "sentences": ["blahp", "blorp"]})
-  
+
   res = {}
-  
+
   # !!!!!!
   # This is the input: it's just a string that represents the document
   # !!!!!!
@@ -205,7 +205,7 @@ def upload():
   sentences = mmr.tokenize_sentences(input_data)
   keyw_r = mmr.keyword_generator(sentences)
   # print('keywords: ', keyw_r['word'], keyw_r['score'])
-  bad_sentences =[(sentences[i], i) for i in range(0, len(sentences))]#This seems unnecessary, please get rid of this, future Isaac
+  bad_sentences =[(sentences[i], i) for i in range(0, len(sentences))]#This seems like a bad way of doing this. Please change it, future Isaac
   # Output fields can go in "res"
   res = {
     "raw_document": input_data,
@@ -217,52 +217,90 @@ def upload():
   if 'rawdocument' not in request.json:
     print("malformed '/upload' request!")
     return jsonify({})
-  
-  
+
+
   SESSIONS[sessionID] = {
      "raw_document": input_data,
      "sentences": bad_sentences,
-     "keywords": keyw_r,  
+     "keywords": keyw_r,
+    #consider saving IDF?
+    #save the processFile results?
   }
   print("number of sessions: ", len(SESSIONS))
   # print('keyword res:', res)
-    
-  return jsonify(res)
 
-# @app.route('/rank', methods=['POST'])
-# def udpate_jeopardy():
+  return jsonify(res) #weird we send the document back and forth. Presumably, the front end already has it.
+
+
+@app.route("/phaseTwo", methods=['POST'])
+def phase_two():
+  """
+    This is a shim for _testable_phase_two. _testable_phase_two has parameters and return values that are easier to
+    test.
+    + Expects request.json('session_id') to be session_id as usual.
+    + Expects requests.json['top_sentences'] to be a list of IDs for the top sentences.
+        (IDs are the same as in the rank method)
+    Return: A jsonified dictionary whose keys are the top_sentence's strings (Not their IDs) and whose values
+       are the cloud sentences.
+    Isaac's note: If you want the front-end to also receive the top_sentences similarity scores, that can be added
+                  easily. Additionally, if we find that sending the full sentences is too much, I can convert them back
+                  into sentence IDs before sending the packet.
+  """
+  return jsonify(_testable_phase_two(int(request.json['session_id']), request.json['top_sentences']))
+
+
+def _testable_phase_two(sessionID, top_sentence_IDs, n=mmr.N_SIM_SENTENCES):
+  """
+  :param sessionID: The integer sessionID
+  :type sessionID: int
+  :param top_sentence_IDs: The IDs for the sentences around which to generate the cloud_sentences
+  :type top_sentence_IDs: [int]
+  :param n: The number of cloud sentences to generate for each top_sentence. If you want this to be user-controlled,
+            you can set that up in the shim. If you just want to change how many are generated without giving the user
+            control, just change N_SIM_SENTENCES in mmr.py
+  :type n: int
+  :return: A dict mapping the strings of the top_sentences to the cloud strings
+  :rtype: {str:[str]}
+  """
+  curr_session = SESSIONS[sessionID]
+  all_sent_objs = mmr.processFile(sessionID, [pair[0] for pair in curr_session['sentences']])
+  top_sentences = [all_sent_objs[x] for x in top_sentence_IDs]
+  other_sentences = [all_sent_objs[x] for x in range(len(all_sent_objs)) if x not in top_sentence_IDs]
+  sim_sentences = mmr.n_sim_sentences(top_sentences, other_sentences, all_sent_objs , n=n)
+  print("Sim_sentences:\n", sim_sentences)
+  return sim_sentences
 
 
 @app.route('/rank', methods=['POST'])
 def rank():
   '''
   Rank sentences from an existing session.
-  
+
   Inputs from request.json:
     'session_id': The session_id to get the right sentence mapping.
     'keywords':   A list of the keywords to use in ranking.
     'summary':    A list of IDs of the sentences currently in the summary.
-  
+
   Outputs JSON fields:
     'scores': A mapping from sentence ID to "Score" (see below)
-  
+
   Ideally, it'd be great to have the following information in "Score":
     - The score from the left-hand side of the MMR equation (i.e. query relevance)
       - The individual contributions of each keyword to the above score.
     - The score from the right-hand side of the MMR equation (i.e. difference from summary)
       - The ID of the argmax summary sentence
       - The individual keyword contributions
-      
+
   If it's too much of a pain to get the keyword contributions, we can
-  just return:  
+  just return:
     - The LH score (i.e. query relevance)
     - The RH score (i.e. summary difference)
-  
+
   Of course, we can also take lambda as an argument, and then just
   return the raw score for each sentence. But: this limits what we can
   visualize on the front-end.
   '''
-  
+
   res = {}
   summary = []
   sentences = []
@@ -278,13 +316,13 @@ def rank():
   print('summary', summary, summaryIDs)
   mmr_scores = mmr.summary_generator(sessionID, sentences, keywords, summary)
   # sent, mmr score, LH score, RH score
-  
+
   for index, out in mmr_scores.iterrows():
     for se, id in curr_session["sentences"]:
-      
+
       if out['sent'] == se:
         mmr_scores.at[index, 'sentID'] = int(id)
-  
+
   # res = mmr_scores.loc[:, ["sentID", 'lscore', 'rscore', 'sent']];
   # res.set_index("sentID", inplace = True);
   # res.columns =  [ "LSimScr", "RSimScr", "sentence"];
@@ -294,7 +332,7 @@ def rank():
   if not all(arg in request.json for arg in ('session_id', 'keywords', 'summary')):
     print("Malformed reuqest to '/rank' endpoint:", request.json)
     return jsonify({})
-  
+
   # TODO: populate res with the scores for each sentence (excluding the summary sentences)
   return res
   # return jsonify(res)

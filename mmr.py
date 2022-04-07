@@ -9,6 +9,8 @@ import sentence
 from nltk.corpus import stopwords
 import pandas as pd
 
+N_SIM_SENTENCES=5 #Default number of cloud sentences to generate
+
 # class mmr_class():
   
   # def __init__(self):
@@ -381,34 +383,51 @@ def bestSenPrep(sessionID, senta):
           sentences.append(sentence.sentence(sessionID, stemmedSent, originalWords))
   return sentences
 
-if __name__ =="__main__":
-  doc = open("public/data/COVIDVaccine_article.txt", "r", encoding="utf-8").read()
-  sentences = tokenize_sentences(doc)
-  keyw_r = keyword_generator(sentences)
 
-  stored_sentences = [(sentences[i], i) for i in range(0, len(sentences))]
-  # keyword_generator(doc)
+def n_sim_sentences(top_sentences, other_sentences, all_sentences, n = N_SIM_SENTENCES):
+  """
+  This will return a dictionary whose keys are the sentences' strs. The values of the dictionary
+   are n-length lists of str from most similar to least similar. This can probably be significantly optimized.
+  :param top_sentences: The sentences around which to generate the cloud sentences. NOTE: these are of the sentence class from sentence.py
+  :type top_sentences: [sentence]
+  :param other_sentences: The sentence pool from which to draw the cloud sentences
+  :type other_sentences: [sentence]
+  :param all_sentences: The entire set of sentences in the document
+  :type all_sentences: [sentence]
+  :param n: The number of cloud sentences to generate
+  :type n: int
+  :return: A dict mapping the strings of the top_sentences to the cloud strings
+  :rtype: {str:[str]}
+  """
+  similarities = {}
+  IDF = IDFs(all_sentences)
+  for top_sentence in top_sentences:
+    similarities[top_sentence.getOriginalWords()] = []  # hashing by entire sentence might be an inefficient way to do this, might not matter
+    for other_sentence in other_sentences:
+      similarities[top_sentence.getOriginalWords()].append((sentenceSim(top_sentence, other_sentence, IDF), other_sentence.getOriginalWords()))
+  similarities = {k: sorted(v, reverse=True) for k, v in similarities.items()}
+  sim_sentences = {t_s.getOriginalWords(): [] for t_s in top_sentences}
+  cloud_sents = set()
+  indices = {t_s.getOriginalWords(): 0 for t_s in top_sentences}
+  counts = {t_s.getOriginalWords() : 0 for t_s in top_sentences}
+  for i in range(len(top_sentences) * n):
+    best_sent = None
+    best_sim = None
+    for sent_obj in top_sentences:
+      sent = sent_obj.getOriginalWords()
+      if counts[sent] == n:
+        continue
+      ind = indices[sent]
+      sim = similarities[sent][ind]
+      if best_sim is None or sim[0] > best_sim[0]:
+        best_sent = sent
+        best_sim = sim
+    if best_sent is None:
+      break  # This triggers if there's not enough sentences to distribute
+    sim_sentences[best_sent].append(best_sim[1])
+    cloud_sents.add(best_sim[1])
+    counts[best_sent] += 1
+    while similarities[best_sent][indices[best_sent]][1] in cloud_sents:
+      indices[best_sent] += 1
+  return sim_sentences
 
-
-# -------------------------------------------------------------
-#	MAIN FUNCTION
-# -------------------------------------------------------------
-# if __name__=='__main__':	
-#   input_file_path = 'public/data/COVIDVaccine_article.txt'
-  
-#   # Top words recommended by the system to form a Query
-  
-#   lines=[]
-#   lines = lines + returnLines(input_file_path)
-#   _stop_words = set(stopwords.words('english'))
-#   query2 = rakeQuery(lines)
-#   wrd = []
-#   scr = []
-#   for rt in query2:
-#     if rt.isalnum() and (not rt.isdigit()) and len(rt) > 3 and (not rt in _stop_words):
-#       wrd.append(rt)
-#       scr.append(query2[rt])
-#   df = pd.DataFrame()
-#   df['word'] = wrd
-#   df['score'] = scr
-#   df = df.sort_values(by=['score'], ascending=False)
