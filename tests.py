@@ -10,7 +10,7 @@ def setup_dummy_session(data):
   sentences = mmr.tokenize_sentences(data)
   keyw_r = mmr.keyword_generator(sentences)
   bad_sentences = [(sentences[i], i) for i in range(0, len(sentences))]
-  sessionID = 5
+  sessionID = 1649369429
   server.SESSIONS[sessionID] = {
     "raw_document": data,
     "sentences": bad_sentences,
@@ -41,5 +41,16 @@ def test_server_cloud(data = DATA, top_sentence_IDs = None):
   for top in result:
     print("\n\t+ ".join([str(top), *[str(x) for x in result[top]]]))
 
+def test_rank():
+  from flask import request
+  s_id = setup_dummy_session(DATA)
+  my_json = {"session_id": s_id, "keywords": ["johnson", "vaccine", "booster", "moderna", "said"], "summary": []}
+  server.json_request = lambda s="" : my_json[s] if s else my_json
+  res = server.rank()
+  print(res)
+  return res
+
 if __name__ == '__main__':
-  test_server_cloud()
+  # test_server_cloud()
+  test_rank()
+  # test_mmr_cloud()

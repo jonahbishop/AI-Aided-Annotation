@@ -8,6 +8,7 @@ import secrets
 import pymongo
 import bcrypt
 
+
 # Support for gomix's 'front-end' and 'back-end' UI. 
 app = Flask(__name__, static_folder='public', template_folder='views')
 # Set the app secret key from the secret environment variables.
@@ -22,6 +23,9 @@ client = pymongo.MongoClient()
 db = client.get_database('total_records')
 #get the particular collection that contains the data
 records = db.register
+
+#Use json_request(s) instead of request.json[s]. If you really need request.json, use json_request().
+json_request = lambda s="" : request.json[s] if s else request.json
 
 # SESSIONS maps a unique ID to all the saved information for a document,
 # i.e. the parsed sentences, and whatever else we might need and don't
@@ -197,7 +201,7 @@ def upload():
   # !!!!!!
   # This is the input: it's just a string that represents the document
   # !!!!!!
-  input_data = request.json['rawdocument']
+  input_data = json_request('rawdocument')
   sessionID = int(time.time())
   sentences = mmr.tokenize_sentences(input_data)
   keyw_r = mmr.keyword_generator(sentences)
@@ -211,7 +215,7 @@ def upload():
     "keywords": keyw_r,#list(keyw_r.apply(lambda x: (x["word"],x["score"]), axis = 1)), # done - maybe only limit to the top n keywords
   }
 
-  if 'rawdocument' not in request.json:
+  if 'rawdocument' not in r_json:
     print("malformed '/upload' request!")
     return jsonify({})
 
@@ -243,7 +247,7 @@ def phase_two():
                   easily. Additionally, if we find that sending the full sentences is too much, I can convert them back
                   into sentence IDs before sending the packet.
   """
-  return jsonify({"Similar Sentences": _testable_phase_two(int(request.json['session_id']), request.json['top_sentences'])})
+  return jsonify({"Similar Sentences": _testable_phase_two(int(json_request('session_id')), json_request('top_sentences'))})
 
 
 def _testable_phase_two(sessionID, top_sentence_IDs, n=mmr.N_SIM_SENTENCES):
@@ -303,11 +307,12 @@ def rank():
   visualize on the front-end.
   """
 
+  res = {}
   summary = []
   sentences = []
-  sessionID = int(request.json['session_id'])
-  keywords = request.json['keywords']
-  summaryIDs = request.json['summary']
+  sessionID = int(json_request('session_id'))
+  keywords = json_request('keywords')
+  summaryIDs = json_request('summary')
   curr_session = SESSIONS[sessionID]
   for i,j in curr_session["sentences"]:
     if j in summaryIDs:
@@ -330,8 +335,8 @@ def rank():
   # res = res.to_dict()
   res = mmr_scores.to_json(orient ='index')
   print('pes', res)
-  if not all(arg in request.json for arg in ('session_id', 'keywords', 'summary')):
-    print("Malformed reuqest to '/rank' endpoint:", request.json)
+  if not all(arg in json_request() for arg in ('session_id', 'keywords', 'summary')):
+    print("Malformed reuqest to '/rank' endpoint:", json_request())
     return jsonify({})
 
   # TODO: populate res with the scores for each sentence (excluding the summary sentences)

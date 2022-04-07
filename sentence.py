@@ -83,3 +83,6 @@ class sentence(object):
       return self.getOriginalWords() == other.getOriginalWords()
     if isinstance(other, str):
       return self.getOriginalWords() == other
+
+  def __hash__(self):
+    return hash(self.getOriginalWords())
