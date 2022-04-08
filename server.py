@@ -215,7 +215,7 @@ def upload():
     "keywords": keyw_r,#list(keyw_r.apply(lambda x: (x["word"],x["score"]), axis = 1)), # done - maybe only limit to the top n keywords
   }
 
-  if 'rawdocument' not in r_json:
+  if 'rawdocument' not in json_request():
     print("malformed '/upload' request!")
     return jsonify({})
 
