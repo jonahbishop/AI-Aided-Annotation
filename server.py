@@ -336,7 +336,7 @@ def rank():
   res = mmr_scores.to_json(orient ='index')
   print('pes', res)
   if not all(arg in json_request() for arg in ('session_id', 'keywords', 'summary')):
-    print("Malformed reuqest to '/rank' endpoint:", json_request())
+    print("Malformed request to '/rank' endpoint:", json_request())
     return jsonify({})
 
   # TODO: populate res with the scores for each sentence (excluding the summary sentences)
