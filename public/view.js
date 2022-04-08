@@ -33,68 +33,6 @@ export class View {
             this.rawDocumentContainer.append(p);
             p.append(txt);
         }
-
-        // TODO: do the best we can to wrap each sentence in a span w/ an ID :)
-    }
-
-    // renderKeywords(keywords) {
-    //   // TODO: integrate the code from client.js into here OR just handle keywords in client.js and delete this.
-    // }
-
-
-    // minScore and maxScore are the min and max scores for all the candidates
-    makeScoreVisualization(lscore, rscore, score, minScore, maxScore, lambda) {
-
-        let row = document.createElement("div");
-        row.classList.add("row");
-        let container = document.createElement("div");
-        container.classList.add("col-12");
-
-        // To get the line to cover more space, we scale based on this value.
-        // Without this, if the maximum score was 0.01, our visualization would be a tiny, tiny sliver of a line. :)
-        let m = 1 / Math.max(-minScore, maxScore);
-        // let daMaxLol = Math.max(-minScore, maxScore);
-
-        // OKAY:
-        // we essentially want a green bar going from 0 to 'score', and then a red bar going from 'score' to 'lscore' (i.e. the max score)
-        // BUT: things get weird if score < 0 :)
-        // In that case, we don't need a green bar at all, and we want a red bar from 'score' to 'lscore'.
-        // If it's easier, we can just draw a green box that gets clobbered by the red :)
-
-        let zeroPoint = 125;
-        let scorePoint = 125 + 100 * score * m;
-        let maxScorePoint = 125 + 100 * lscore * m;
-
-        let greenRectX = zeroPoint;
-        let greenRectW = scorePoint - zeroPoint;
-
-        let redRectX = scorePoint;
-        let redRectW = maxScorePoint - scorePoint;
-
-        let prettyScore = Math.round(score * 100) / 100;
-        let minScorePoint = 125 + 100 * (lscore - rscore) * m;
-
-        let greenRectHTML = `<rect x="${greenRectX}" y="12" rx="1" ry="1" width="${greenRectW}" height="6"
-            style="fill:green;opacity:0.5" />`;
-
-        container.innerHTML = `
-    <svg width="256px" height="40px">
-    
-      ${score > 0 ? greenRectHTML : ''}
-                  
-      <rect x="${redRectX}" y="12" rx="1" ry="1" width="${redRectW}" height="6"
-            style="fill:red;opacity:0.5" />
-            
-        <line x1="${scorePoint}" y1="7" x2="${scorePoint}" y2="23" style="stroke:rgb(140,140,140);stroke-width:1" />
-        <text x="${scorePoint}" y="33" font-size="10px" fill="grey">${prettyScore}</text>
-        
-        <line x1="${minScorePoint}" y1="7" x2="${minScorePoint}" y2="23" style="stroke:rgb(200, 20, 20);stroke-width:1" />
-    </svg>
-    `;
-
-        row.appendChild(container);
-        return row;
-
     }
 
     // This is the version where lambda=0 has meaning
@@ -164,19 +102,16 @@ export class View {
 
 
     // TODO: complete this function. Document what 'candidates' is :)
-    renderCandidates(candidates, lambda, rawSentences, keywords, useV2) {
+    renderCandidates(candidates, lambda, rawSentences, keywords) {
         // candidates is a list: [{ID, lscore, rscore, score, rank, prev_rank}, ...]
-
-        console.log("Using v2? ", useV2);
 
         this.candidatesContainer.innerHTML = ""; // reset the container
         this.candidateIDToContainer = {};
 
         // We need these later on, but we only need to calculate them once, so we do it outside of the loop.
         let maxScore = Math.max(...candidates.map(x => x.lscore));
-        let minScoreV1 = Math.min(...candidates.map(x => x.lscore - x.rscore));
         let minScoreV2 = Math.min(...candidates.map(x => -x.rscore));
-        // 
+
         for (let candidate of candidates.slice(0, 25)) {
 
             let outer = document.createElement("div");
@@ -216,13 +151,8 @@ export class View {
 
 
             let scoreViz = (
-                useV2 ?
-                this.makeAlternateScoreVisualization(candidate.lscore, candidate.rscore, candidate.score, minScoreV2, maxScore, lambda) :
-                this.makeScoreVisualization(candidate.lscore, candidate.rscore, candidate.score, minScoreV1, maxScore, lambda)
+                this.makeAlternateScoreVisualization(candidate.lscore, candidate.rscore, candidate.score, minScoreV2, maxScore, lambda)
             );
-
-
-            // TODO: add a visualization of the score!!!
 
             // Assemble!
             // Note: It'd be clearer if we just set innerHTML... 
@@ -231,7 +161,6 @@ export class View {
             cardBody.appendChild(row);
             row.appendChild(sentenceCol);
             sentenceCol.innerHTML = sentenceHTML;
-            // sentenceCol.appendChild(sentenceText);
             row.appendChild(rankChangeCol);
             rankChangeCol.appendChild(rankChange);
             cardBody.appendChild(scoreViz);
@@ -248,9 +177,11 @@ export class View {
 
     // summarySentences: List[IDs]
     // rawSentences: List[Text]  (index is ID)
-    renderGeneratedSummary(summarySentences, rawSentences) {
+    renderGeneratedSummary(summarySentences, rawSentences, similarSentences) {
         this.generatedSummaryContainer.innerHTML = ""; // reset the container
         this.dataContainer.innerHTML = ""; // reset the container
+
+        //console.log(similarSentences['39'])
 
         for (let sentenceID of summarySentences) {
 
@@ -265,7 +196,14 @@ export class View {
             let inner = document.createElement("div");
             inner.classList.add("card-body");
 
-            let text = document.createTextNode(rawSentences[sentenceID]);
+            let textPlusSum = rawSentences[sentenceID];
+
+
+            for (let simSentence of similarSentences[sentenceID]) {
+                textPlusSum += rawSentences[simSentence];
+            }
+            let text = document.createTextNode(textPlusSum);
+
 
             // Assemble!
             this.generatedSummaryContainer.appendChild(outer);
@@ -281,7 +219,6 @@ export class View {
             inner2.style.width = "100%";
             inner2.setAttribute("style", "height:" + inner.offsetHeight + "px")
 
-            //document.getElementById('div_register').setAttribute("style","width:500px");
             outer2.setAttribute("style", "height:" + outer.offsetHeight + "px")
 
             this.dataContainer.appendChild(outer2);
@@ -319,6 +256,4 @@ export class View {
             inner.appendChild(text);
         }
     }
-
-    // TODO: add stuff to render everything else :D 
 }

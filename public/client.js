@@ -1,7 +1,7 @@
 import { DEMO_ARTICLE_TEXT, DEMO_journal_article, DEMO_Legal_Reputation } from "./demo_article.js";
 import { TOP_SENTENCES } from "./top_sentences.js";
 import { autocomplete } from "./autocomplete.js";
-import { uploadDocument, rank } from "./api.js";
+import { uploadDocument, rank, phase_two } from "./api.js";
 import { View } from "./view.js";
 const SlimSelect = window.SlimSelect;
 
@@ -17,7 +17,7 @@ let sessionID = null;
 // These are involved in the ranking.
 let candidateSentences = []; // list: [{ID, lscore, rscore, score, rank, prev_rank}, ...]
 let summarySentences = []; // [IDs]
-// let lambda = 0;  // TODO: make this a getter instead?
+let lambda = 0.15; // TODO: make this a getter instead?
 
 // Information about sentence selection
 let selectedSentence = null; // ID?
@@ -28,12 +28,8 @@ function getCurrentLambda() {
     return lambdaSlider.valueAsNumber / 100.0;
 }
 
-let useAlternateMMREquation = true;
-
 function mmrScore(sim1, sim2, lambda) {
-    return useAlternateMMREquation ?
-        lambda * sim1 - (1 - lambda) * sim2 :
-        sim1 - (1 - lambda) * sim2;
+    return lambda * sim1 - (1 - lambda) * sim2;
 }
 
 
@@ -109,7 +105,23 @@ let nextButtonHandler = function() {
     const element = document.getElementById("bottom-row");
     element.scrollIntoView()
 
-    view.renderGeneratedSummary(summarySentences, rawSentences);
+    if (sessionID === null) {
+        alert("Please upload a document first!");
+        return;
+    }
+    phase_two(sessionID, summarySentences, handleSimResults);
+
+
+}
+
+let handleSimResults = function(res) {
+
+
+    res = JSON.parse(res);
+
+    console.log(res.similar_sentences)
+
+    view.renderGeneratedSummary(summarySentences, rawSentences, res.similar_sentences);
 }
 
 
@@ -121,7 +133,7 @@ let nextButtonHandler = function() {
 function handleLambdaChange() {
     if (candidateSentences.length < 1) return;
 
-    let lambda = getCurrentLambda();
+    // let lambda = getCurrentLambda();
     // console.log("revamping sentences because of new lambda!", lambda);
     // console.log("before candidates:", candidateSentences);
 
@@ -137,7 +149,7 @@ function handleLambdaChange() {
     });
 
     // console.log("after candidates:", candidateSentences);
-    view.renderCandidates(candidateSentences, lambda, rawSentences, query_slimSelect.selected(), useAlternateMMREquation);
+    view.renderCandidates(candidateSentences, lambda, rawSentences, query_slimSelect.selected());
 }
 
 // This is called when we get back ranking results from the backend.
@@ -171,7 +183,7 @@ function handleRerankResult(res) {
 
     // console.log("Candidates before rendering: ", candidateSentences);
 
-    view.renderCandidates(candidateSentences, lambda, rawSentences, query_slimSelect.selected(), useAlternateMMREquation);
+    view.renderCandidates(candidateSentences, lambda, rawSentences, query_slimSelect.selected());
 }
 
 // Ping the backend to get a new ranking.
@@ -307,29 +319,7 @@ window.onload = function() {
     document.getElementById("ranking-view").ondrop = onDropInCandidatesSection;
 
     query_slimSelect.onChange = onKeywordsChange;
-
-    let mmrVersionSelect = document.getElementById("mmr-version");
-    mmrVersionSelect.onchange = () => {
-        useAlternateMMREquation = mmrVersionSelect.value !== '2';
-        handleLambdaChange();
-    };
 };
-
-
-
-
-
-
-
-
-/*
- *
- *
- * Land of old cruft!
- *
- *
- */
-
 
 /*
 JS tips
