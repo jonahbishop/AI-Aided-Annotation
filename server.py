@@ -359,13 +359,13 @@ def generate_json():
   """
   sessionID = int(json_request("session_id"))
   full_sum = json_request("full_summary")
-  jeop = json_request("jeopardy")
   keywords = json_request("keywords")
+  jeop = json_request("jeopardy")
   if sessionID not in session_to_file_handle:
     session_to_file_handle[sessionID] = "".join([random.choice(string.ascii_letters + string.digits) for _ in range(20)])
   handle = session_to_file_handle[sessionID]
-  # return jsonify({"handle": _generate_json(handle, full_sum, jeop, keywords)})
-  return {"handle": _generate_json(handle, full_sum, jeop, keywords)}
+  return jsonify({"handle": _generate_json(handle, full_sum, jeop, keywords)})
+  # return {"handle": _generate_json(handle, full_sum, jeop, keywords)}
 
 
 def _generate_json(handle, full_sum, jeopardy, keywords):
