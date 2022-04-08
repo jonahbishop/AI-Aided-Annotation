@@ -353,7 +353,7 @@ def rank():
 def generate_json():
   """
   session_id: as usual
-  cloud: {summary_sentences : [cloud_sentences, ...], ...}
+  full_summmary: {summary_sentences : [cloud_sentences, ...], ...}
   keywords: [keywordA, ...]
   jeopardy: [jeopardy_questions, ...]
   """
