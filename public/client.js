@@ -1,7 +1,7 @@
 import { DEMO_ARTICLE_TEXT, DEMO_journal_article, DEMO_Legal_Reputation } from "./demo_article.js";
 import { TOP_SENTENCES } from "./top_sentences.js";
 import { autocomplete } from "./autocomplete.js";
-import { uploadDocument, rank } from "./api.js";
+import { uploadDocument, rank, phase_two } from "./api.js";
 import { View } from "./view.js";
 const SlimSelect = window.SlimSelect;
 
@@ -105,7 +105,23 @@ let nextButtonHandler = function() {
     const element = document.getElementById("bottom-row");
     element.scrollIntoView()
 
-    view.renderGeneratedSummary(summarySentences, rawSentences);
+    if (sessionID === null) {
+        alert("Please upload a document first!");
+        return;
+    }
+    phase_two(sessionID, summarySentences, handleSimResults);
+
+
+}
+
+let handleSimResults = function(res) {
+
+
+    res = JSON.parse(res);
+
+    console.log(res.similar_sentences)
+
+    view.renderGeneratedSummary(summarySentences, rawSentences, res.similar_sentences);
 }
 
 

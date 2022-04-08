@@ -233,7 +233,7 @@ def upload():
   return jsonify(res) #weird we send the document back and forth. Presumably, the front end already has it.
 
 
-@app.route("/phaseTwo", methods=['POST'])
+@app.route("/phase_two", methods=['POST'])
 def phase_two():
   """
     This is a shim for _testable_phase_two. _testable_phase_two has parameters and return values that are easier to
@@ -247,7 +247,7 @@ def phase_two():
                   easily. Additionally, if we find that sending the full sentences is too much, I can convert them back
                   into sentence IDs before sending the packet.
   """
-  return jsonify({"Similar Sentences": _testable_phase_two(int(json_request('session_id')), json_request('top_sentences'))})
+  return jsonify({"similar_sentences": _testable_phase_two(int(json_request('session_id')), json_request('top_sentences'))})
 
 
 def _testable_phase_two(sessionID, top_sentence_IDs, n=mmr.N_SIM_SENTENCES):

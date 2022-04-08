@@ -177,9 +177,11 @@ export class View {
 
     // summarySentences: List[IDs]
     // rawSentences: List[Text]  (index is ID)
-    renderGeneratedSummary(summarySentences, rawSentences) {
+    renderGeneratedSummary(summarySentences, rawSentences, similarSentences) {
         this.generatedSummaryContainer.innerHTML = ""; // reset the container
         this.dataContainer.innerHTML = ""; // reset the container
+
+        //console.log(similarSentences['39'])
 
         for (let sentenceID of summarySentences) {
 
@@ -194,7 +196,14 @@ export class View {
             let inner = document.createElement("div");
             inner.classList.add("card-body");
 
-            let text = document.createTextNode(rawSentences[sentenceID]);
+            let textPlusSum = rawSentences[sentenceID];
+
+
+            for (let simSentence of similarSentences[sentenceID]) {
+                textPlusSum += rawSentences[simSentence];
+            }
+            let text = document.createTextNode(textPlusSum);
+
 
             // Assemble!
             this.generatedSummaryContainer.appendChild(outer);
