@@ -1,13 +1,13 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 import os
-from flask import Flask, request, render_template, jsonify, session, url_for, redirect
+from flask import Flask, request, render_template, jsonify, session, url_for, redirect, send_file
+from flask.json import dump
 import time
 import mmr
 import secrets
 import pymongo
 import bcrypt
-
 
 # Support for gomix's 'front-end' and 'back-end' UI. 
 app = Flask(__name__, static_folder='public', template_folder='views')
@@ -236,9 +236,9 @@ def upload():
 @app.route("/phase_two", methods=['POST'])
 def phase_two():
   """
-    This is a shim for _testable_phase_two. _testable_phase_two has parameters and return values that are easier to
-    test.
-    + Expects request.json('session_id') to be session_id as usual.
+    This is a wrapper for _testable_phase_two. _testable_phase_two has parameters and return values that are easier to
+    test server-side  .
+    + Expects requests.json['session_id'] to be session_id as usual.
     + Expects requests.json['top_sentences'] to be a list of IDs for the top sentences.
         (IDs are the same as in the rank method)
     Return: A jsonified dictionary whose keys are the top_sentence's strings (Not their IDs) and whose values
@@ -343,6 +343,26 @@ def rank():
   return res
   # return jsonify(res)
 
+@app.route("/generate_json", methods=["POST"])
+def generate_json():
+  """
+  session_id: as usual
+  full_summary: {summary_sentences : ([cloud_sentences, ], [jeopardy_questions, ]), }
+  """
+  sessionID = int(json_request("session_id"))
+  full_sum = json_request("full_summary")
+  return _generate_json(sessionID, full_sum)
+
+def _generate_json(sessionID, full_sum):
+  filename = f"./exports/{sessionID}.json"
+  dump(full_sum, open(filename, "w", encoding="utf-8"), ensure_ascii=False)
+  return "OK"
+
+# @app.route("/download")
+# def export():
+  # request.method
+
 
 if __name__ == '__main__':
-  app.run()
+  print(dir(request.json))
+  app.run(debug=True)
