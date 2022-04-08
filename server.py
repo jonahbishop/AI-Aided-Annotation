@@ -250,8 +250,7 @@ def phase_two():
     Return: A jsonified dictionary whose keys are the top_sentence's strings (Not their IDs) and whose values
        are the cloud sentences.
     Isaac's note: If you want the front-end to also receive the top_sentences similarity scores, that can be added
-                  easily. Additionally, if we find that sending the full sentences is too much, I can convert them back
-                  into sentence IDs before sending the packet.
+                  easily.
   """
   return jsonify({"similar_sentences": _testable_phase_two(int(json_request('session_id')), json_request('top_sentences'))})
 
