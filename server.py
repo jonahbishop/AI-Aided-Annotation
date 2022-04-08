@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 import os
+import string
+
 from flask import Flask, request, render_template, jsonify, session, url_for, redirect, send_file
 from flask.json import dump
 import time
@@ -8,6 +10,7 @@ import mmr
 import secrets
 import pymongo
 import bcrypt
+import random
 
 # Support for gomix's 'front-end' and 'back-end' UI. 
 app = Flask(__name__, static_folder='public', template_folder='views')
@@ -15,6 +18,9 @@ app = Flask(__name__, static_folder='public', template_folder='views')
 app.secret = os.environ.get('SECRET')
 secret = secrets.token_urlsafe(32)
 app.secret_key = secret
+
+
+session_to_file_handle = {}
 
 #connect to your Mongo DB database
 client = pymongo.MongoClient()
@@ -347,20 +353,30 @@ def rank():
 def generate_json():
   """
   session_id: as usual
-  full_summary: {summary_sentences : ([cloud_sentences, ], [jeopardy_questions, ]), }
+  cloud: {summary_sentences : [cloud_sentences, ...], ...}
+  keywords: [keywordA, ...]
+  jeopardy: [jeopardy_questions, ...]
   """
   sessionID = int(json_request("session_id"))
   full_sum = json_request("full_summary")
-  return _generate_json(sessionID, full_sum)
+  jeop = json_request("jeopardy")
+  keywords = json_request("keywords")
+  if sessionID not in session_to_file_handle:
+    session_to_file_handle[sessionID] = "".join([random.choice(string.ascii_letters + string.digits) for _ in range(20)])
+  handle = session_to_file_handle[sessionID]
+  # return jsonify({"handle": _generate_json(handle, full_sum, jeop, keywords)})
+  return {"handle": _generate_json(handle, full_sum, jeop, keywords)}
 
-def _generate_json(sessionID, full_sum):
-  filename = f"./exports/{sessionID}.json"
-  dump(full_sum, open(filename, "w", encoding="utf-8"), ensure_ascii=False)
-  return "OK"
 
-# @app.route("/download")
-# def export():
-  # request.method
+def _generate_json(handle, full_sum, jeopardy, keywords):
+  filename = f"./exports/{handle}.json"
+  dump({"Full Summary" : full_sum, "Jeopardy Questions" : jeopardy, "Keywords" : keywords}, open(filename, "w", encoding="utf-8"), ensure_ascii=False)
+  return handle
+
+
+@app.get("/download/<handle>")
+def export(handle):
+  return send_file(handle, as_attachment=True)
 
 
 if __name__ == '__main__':
