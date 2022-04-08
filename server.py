@@ -364,5 +364,4 @@ def _generate_json(sessionID, full_sum):
 
 
 if __name__ == '__main__':
-  print(dir(request.json))
   app.run(debug=True)
