@@ -376,7 +376,7 @@ def _generate_json(handle, full_sum, jeopardy, keywords):
 
 @app.get("/download/<handle>")
 def export(handle):
-  return send_file(handle, as_attachment=True)
+  return send_file(f"./exports/{handle}.json", as_attachment=True)
 
 
 if __name__ == '__main__':
