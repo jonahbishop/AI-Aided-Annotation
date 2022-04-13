@@ -69,11 +69,11 @@ let autoPopulateHandler = function() {
 
     // discard current summary
     view.resetSummaryToNothing();
-    const tenPercent = rawSentences.length / 10;
+    const numDiverse = 5;
 
-    console.log("There will be " + tenPercent + " sentences in summary as a result of auto populate");
+    console.log("There will be " + numDiverse + " sentences in summary as a result of auto populate");
 
-    for (let i = 0; i < tenPercent; i++) {
+    for (let i = 0; i < numDiverse; i++) {
 
         const sentenceID = candidateSentences[0].ID;
         console.log(sentenceID)
