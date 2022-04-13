@@ -21,6 +21,10 @@ rect {
     background-color: #ffef00a3;
 }
 
+.ds-rank {
+    background-color: #00ff55a3;
+}
+
 #summary-header {
     display: inline-block;
 }

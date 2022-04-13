@@ -17,17 +17,12 @@ let sessionID = null;
 // These are involved in the ranking.
 let candidateSentences = []; // list: [{ID, lscore, rscore, score, rank, prev_rank}, ...]
 let summarySentences = []; // [IDs]
-let lambda = 0.15; // TODO: make this a getter instead?
+let lambda = 0.15;
 
 // Information about sentence selection
 let selectedSentence = null; // ID?
 
-function getCurrentLambda() {
-    let lambdaSlider = document.getElementById("lambdaSlider");
-    // Note: the slider is an int from 0 to 100, but we want a float from 0 to 1.
-    return lambdaSlider.valueAsNumber / 100.0;
-}
-
+// calculate the final MMR score
 function mmrScore(sim1, sim2, lambda) {
     return lambda * sim1 - (1 - lambda) * sim2;
 }
@@ -102,16 +97,15 @@ let nextButtonHandler = function() {
 
     console.log("Next Pressed")
 
-    const element = document.getElementById("bottom-row");
-    element.scrollIntoView()
-
     if (sessionID === null) {
         alert("Please upload a document first!");
         return;
     }
+
     phase_two(sessionID, summarySentences, handleSimResults);
 
-
+    const element = document.getElementById("bottom-row");
+    element.scrollIntoView()
 }
 
 let handleSimResults = function(res) {
@@ -129,29 +123,6 @@ let handleSimResults = function(res) {
 // Functions dealing w/ ranking
 /////////////////////////////////
 
-// When lambda changes, we trigger a rerank, but don't need to ping the backend
-function handleLambdaChange() {
-    if (candidateSentences.length < 1) return;
-
-    // let lambda = getCurrentLambda();
-    // console.log("revamping sentences because of new lambda!", lambda);
-    // console.log("before candidates:", candidateSentences);
-
-    candidateSentences = candidateSentences.map(s => {
-        s.score = mmrScore(s.lscore, s.rscore, lambda);
-        return s;
-    });
-    candidateSentences.sort((c1, c2) => (c1.score < c2.score ? 1 : (c1.score > c2.score ? -1 : 0)));
-    candidateSentences = candidateSentences.map((candidate, idx) => {
-        candidate.prev_rank = candidate.rank;
-        candidate["rank"] = idx + 1;
-        return candidate;
-    });
-
-    // console.log("after candidates:", candidateSentences);
-    view.renderCandidates(candidateSentences, lambda, rawSentences, query_slimSelect.selected());
-}
-
 // This is called when we get back ranking results from the backend.
 function handleRerankResult(res) {
     res = JSON.parse(res);
@@ -162,10 +133,7 @@ function handleRerankResult(res) {
         candidateSentences = rawSentences.map((s, idx) => ({ ID: idx }));
     }
 
-    let lambda = getCurrentLambda();
     let idToPreviousRank = new Map(candidateSentences.map(c => [c.ID, c.rank]));
-
-
 
     candidateSentences = Object.values(res).map(s => ({
         // candidateSentences = res["sen_scores"].map(s => ({
@@ -215,12 +183,6 @@ var query_slimSelect = new SlimSelect({
 });
 
 window.sselect = query_slimSelect; // for debugging :)
-
-// use this formatting to update the options for keywords
-//query_slimSelect.setData([
-//  {text: 'value1', innerHTML: "<p>something</p>"},
-//  {text: 'value2', data : 2}
-//])
 
 let uploadClickHandler = function() {
     let rawdoc = document.getElementById("rawdoctextarea").value;
@@ -302,9 +264,6 @@ window.onload = function() {
 
     let uploadButtonModal = document.getElementById("upload_button_modal");
     uploadButtonModal.onclick = uploadClickHandler;
-
-    let lambdaSlider = document.getElementById("lambdaSlider");
-    lambdaSlider.onchange = handleLambdaChange;
 
     let autoPopulateButton = document.getElementById("auto-populate-button");
     autoPopulateButton.onclick = autoPopulateHandler;

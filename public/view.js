@@ -36,7 +36,7 @@ export class View {
     }
 
     // This is the version where lambda=0 has meaning
-    makeAlternateScoreVisualization(lscore, rscore, score, minScore, maxScore, lambda) {
+    addSentenceVisuals(lscore, rscore, score, minScore, maxScore, lambda) {
 
         let row = document.createElement("div");
         row.classList.add("row");
@@ -150,9 +150,7 @@ export class View {
             rankChange = document.createTextNode(rankChange);
 
 
-            let scoreViz = (
-                this.makeAlternateScoreVisualization(candidate.lscore, candidate.rscore, candidate.score, minScoreV2, maxScore, lambda)
-            );
+            let scoreViz = this.addSentenceVisuals(candidate.lscore, candidate.rscore, candidate.score, minScoreV2, maxScore, lambda);
 
             // Assemble!
             // Note: It'd be clearer if we just set innerHTML... 
@@ -177,57 +175,6 @@ export class View {
 
     // summarySentences: List[IDs]
     // rawSentences: List[Text]  (index is ID)
-    renderGeneratedSummary(summarySentences, rawSentences, similarSentences) {
-        this.generatedSummaryContainer.innerHTML = ""; // reset the container
-        this.dataContainer.innerHTML = ""; // reset the container
-
-        //console.log(similarSentences['39'])
-
-        for (let sentenceID of summarySentences) {
-
-            let outer = document.createElement("div");
-            outer.classList.add("card");
-            outer.classList.add("candidate-card");
-            this.candidateIDToContainer[sentenceID] = outer;
-
-            // TODO: implement selection
-            outer.addEventListener("click", function() { console.log("clicked: ", sentenceID) }, true);
-
-            let inner = document.createElement("div");
-            inner.classList.add("card-body");
-
-            let textPlusSum = rawSentences[sentenceID];
-
-
-            for (let simSentence of similarSentences[sentenceID]) {
-                textPlusSum += rawSentences[simSentence];
-            }
-            let text = document.createTextNode(textPlusSum);
-
-
-            // Assemble!
-            this.generatedSummaryContainer.appendChild(outer);
-            outer.appendChild(inner);
-            inner.appendChild(text);
-
-            let outer2 = document.createElement("div");
-            outer2.classList.add("card");
-            outer2.classList.add("data-card");
-
-            let inner2 = document.createElement("textarea");
-            inner2.classList.add("card-body");
-            inner2.style.width = "100%";
-            inner2.setAttribute("style", "height:" + inner.offsetHeight + "px")
-
-            outer2.setAttribute("style", "height:" + outer.offsetHeight + "px")
-
-            this.dataContainer.appendChild(outer2);
-            outer2.appendChild(inner2);
-        }
-    }
-
-    // summarySentences: List[IDs]
-    // rawSentences: List[Text]  (index is ID)
     renderSummary(summarySentences, rawSentences) {
         this.summaryContainer.innerHTML = ""; // reset the container
 
@@ -247,13 +194,60 @@ export class View {
 
             let inner = document.createElement("div");
             inner.classList.add("card-body");
-
-            let text = document.createTextNode(rawSentences[sentenceID]);
+            inner.innerHTML = rawSentences[sentenceID];
 
             // Assemble!
             this.summaryContainer.appendChild(outer);
             outer.appendChild(inner);
-            inner.appendChild(text);
         }
+    }
+
+    // summarySentences: List[IDs]
+    // rawSentences: List[Text]  (index is ID)
+    renderGeneratedSummary(summarySentences, rawSentences, similarSentences) {
+        this.generatedSummaryContainer.innerHTML = ""; // reset the container
+        this.dataContainer.innerHTML = ""; // reset the container
+
+        //console.log(similarSentences['39'])
+
+        for (let sentenceID of summarySentences) {
+
+            let outer = document.createElement("div");
+            outer.classList.add("card");
+            outer.classList.add("candidate-card");
+            this.candidateIDToContainer[sentenceID] = outer;
+
+            // TODO: implement selection
+            outer.addEventListener("click", function() { console.log("clicked: ", sentenceID) }, true);
+
+            let inner = document.createElement("div");
+            inner.classList.add("card-body");
+
+            // add the diverse sentence and all the similar ones to a textNode
+            let textPlusSum = `<span class="ds-rank">${rawSentences[sentenceID]}</span>`;
+            for (let simSentence of similarSentences[sentenceID]) {
+                textPlusSum += rawSentences[simSentence];
+            }
+
+            // Assemble!
+            this.generatedSummaryContainer.appendChild(outer);
+            outer.appendChild(inner);
+            inner.innerHTML = textPlusSum;
+        }
+
+        // add the text box for the annotated data column
+        let outer2 = document.createElement("div");
+        outer2.classList.add("card");
+        outer2.classList.add("data-card");
+
+        let inner2 = document.createElement("textarea");
+        inner2.classList.add("card-body");
+        inner2.style.width = "100%";
+        //inner2.setAttribute("style", "height:" + inner.offsetHeight + "px")
+
+        outer2.setAttribute("style", "height:" + (this.generatedSummaryContainer.offsetHeight - 18) + "px")
+
+        this.dataContainer.appendChild(outer2);
+        outer2.appendChild(inner2);
     }
 }
