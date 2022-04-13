@@ -57,11 +57,14 @@ def test_rank():
 
 def test_json_file():
   s_id = setup_dummy_session(DATA)
-  my_sum = {"Top_sentence_A" : (["Cloud_sent_AA", "Cloud_sent_AB", "Cloud_sent_AC"], ["Alex Trebek?", "What?", "Where"]),
-             "Top_sentence_B" : (["Cloud_sent_BA", "Cloud_sent_BB", "Cloud_sent_BC"], ["Why?", "When?", "How?"])}
-  my_json = {"session_id" : s_id, "full_summary": my_sum}
+  my_sum = {"Top_sentence_A" : ["Cloud_sent_AA", "Cloud_sent_AB", "Cloud_sent_AC"],
+             "Top_sentence_B" : ["Cloud_sent_BA", "Cloud_sent_BB", "Cloud_sent_BC"]}
+  my_keywr = ["Banana", "Monkey", "Bonobo"]
+  my_jeop = ["Why?", "When?", "How?", "Alex Trebek?", "What?", "Where"]
+  my_json = {"session_id" : s_id, "full_summary": my_sum, "jeopardy": my_jeop, "keywords": my_keywr}
   _redirect_server_json_requests(my_json)
-  server.generate_json()
+  print(server.generate_json())
+  print(server.session_to_file_handle[s_id])
 
 
 if __name__ == '__main__':

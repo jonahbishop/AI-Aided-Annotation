@@ -9,7 +9,7 @@ import sentence
 from nltk.corpus import stopwords
 import pandas as pd
 
-N_SIM_SENTENCES=5 #Default number of cloud sentences to generate
+N_SIM_SENTENCES=4 #Default number of cloud sentences to generate
 
 # class mmr_class():
 
