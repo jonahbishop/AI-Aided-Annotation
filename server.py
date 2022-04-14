@@ -136,7 +136,7 @@ def logged_in():
 def logout():
   if "email" in session:
     session.pop("email", None)
-    return render_template("signout.html")
+    return render_template("intro.html")
   else:
     return render_template('register.html')
 
@@ -158,9 +158,6 @@ def apply_kr_hello(response):
 @app.route('/')
 def homepage():
   """Displays the homepage."""
-  # TODO: use intro.html when we're done testing the API.
-  # return render_template('api_test.html')
-  # return render_template('index.html')
   return render_template('intro.html')
 
 

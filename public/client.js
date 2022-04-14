@@ -1,6 +1,4 @@
 import { DEMO_ARTICLE_TEXT, DEMO_journal_article, DEMO_Legal_Reputation } from "./demo_article.js";
-import { TOP_SENTENCES } from "./top_sentences.js";
-import { autocomplete } from "./autocomplete.js";
 import { uploadDocument, rank, phase_two } from "./api.js";
 import { View } from "./view.js";
 const SlimSelect = window.SlimSelect;
