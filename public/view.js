@@ -58,15 +58,11 @@ export class View {
 
 
     // TODO: complete this function. Document what 'candidates' is :)
-    renderCandidates(candidates, lambda, rawSentences, keywords) {
+    renderCandidates(candidates, rawSentences, keywords) {
         // candidates is a list: [{ID, lscore, rscore, score, rank, prev_rank}, ...]
 
         this.candidatesContainer.innerHTML = ""; // reset the container
         this.candidateIDToContainer = {};
-
-        // We need these later on, but we only need to calculate them once, so we do it outside of the loop.
-        let maxScore = Math.max(...candidates.map(x => x.lscore));
-        let minScoreV2 = Math.min(...candidates.map(x => -x.rscore));
 
         for (let candidate of candidates.slice(0, 25)) {
 
@@ -92,9 +88,6 @@ export class View {
             let sentenceCol = document.createElement("div");
             sentenceCol.classList.add("col-10");
 
-            let rankChangeCol = document.createElement("div");
-            rankChangeCol.classList.add("col-2");
-
             let sentenceHTML = this.wrapKeywordsInSentence(rawSentences[candidate.ID], keywords);
 
             let [r, prevR] = [candidate.rank, candidate.prev_rank];
@@ -103,18 +96,13 @@ export class View {
                 let delta = prevR - r;
                 rankChange = `${delta > 0 ? '+' : ''}${delta}`;
             }
-            rankChange = document.createTextNode(rankChange);
-
 
             // Assemble!
-            // Note: It'd be clearer if we just set innerHTML... 
             this.candidatesContainer.appendChild(outer);
             outer.appendChild(cardBody);
             cardBody.appendChild(row);
             row.appendChild(sentenceCol);
             sentenceCol.innerHTML = sentenceHTML;
-            row.appendChild(rankChangeCol);
-            rankChangeCol.appendChild(rankChange);
         }
     }
 
@@ -161,17 +149,13 @@ export class View {
         this.generatedSummaryContainer.innerHTML = ""; // reset the container
         this.dataContainer.innerHTML = ""; // reset the container
 
-        //console.log(similarSentences['39'])
-
+        // iterate over the selected diverse sentences
         for (let sentenceID of summarySentences) {
 
             let outer = document.createElement("div");
             outer.classList.add("card");
             outer.classList.add("candidate-card");
             this.candidateIDToContainer[sentenceID] = outer;
-
-            // TODO: implement selection
-            outer.addEventListener("click", function() { console.log("clicked: ", sentenceID) }, true);
 
             let inner = document.createElement("div");
             inner.classList.add("card-body");
@@ -188,19 +172,39 @@ export class View {
             inner.innerHTML = textPlusSum;
         }
 
-        // add the text box for the annotated data column
-        let outer2 = document.createElement("div");
-        outer2.classList.add("card");
-        outer2.classList.add("data-card");
+        // add the keyword box for the annotated data column
+        // TODO: Get the keywords from the sentences
+        let keywordBox = document.createElement("div");
+        keywordBox.classList.add("card");
+        keywordBox.classList.add("data-card");
 
-        let inner2 = document.createElement("textarea");
-        inner2.classList.add("card-body");
-        inner2.style.width = "100%";
-        //inner2.setAttribute("style", "height:" + inner.offsetHeight + "px")
+        let innerKeywordBox = document.createElement("div");
+        innerKeywordBox.classList.add("card-body");
+        innerKeywordBox.innerHTML = "Keywords will go here"
 
-        outer2.setAttribute("style", "height:" + (this.generatedSummaryContainer.offsetHeight - 18) + "px")
+        this.dataContainer.appendChild(keywordBox);
+        keywordBox.appendChild(innerKeywordBox);
+    }
 
-        this.dataContainer.appendChild(outer2);
-        outer2.appendChild(inner2);
+    renderNewQuestion() {
+        let outer = document.createElement("div");
+        outer.classList.add("card");
+        outer.classList.add("q&a-card");
+        outer.classList.add("p-1");
+
+        let question = document.createElement("textarea");
+        question.classList.add("card-body");
+        question.classList.add("p-1");
+        question.placeholder = "Type Question Here"
+
+        let answer = document.createElement("textarea");
+        answer.classList.add("card-body");
+        answer.classList.add("p-1");
+        answer.placeholder = "Type Answer Here"
+
+        // Assemble!
+        this.dataContainer.appendChild(outer);
+        outer.appendChild(question);
+        outer.appendChild(answer);
     }
 }

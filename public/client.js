@@ -15,7 +15,7 @@ let sessionID = null;
 // These are involved in the ranking.
 let candidateSentences = []; // list: [{ID, lscore, rscore, score, rank, prev_rank}, ...]
 let summarySentences = []; // [IDs]
-let lambda = 0; // set the value of lambda here
+let lambda = 0.15; // set the value of lambda here
 
 // Information about sentence selection
 let selectedSentence = null; // ID?
@@ -91,7 +91,7 @@ let autoPopulateHandler = function() {
     }
 }
 
-let nextButtonHandler = function() {
+let nextHandler = function() {
 
     console.log("Next Pressed")
 
@@ -104,6 +104,18 @@ let nextButtonHandler = function() {
 
     const element = document.getElementById("scroll-here");
     element.scrollIntoView()
+}
+
+let newQuestionHandler = function() {
+
+    console.log("New Question Pressed")
+
+    if (sessionID === null) {
+        alert("Please upload a document first!");
+        return;
+    }
+
+    view.renderNewQuestion()
 }
 
 let handleSimResults = function(res) {
@@ -149,7 +161,7 @@ function handleRerankResult(res) {
 
     // console.log("Candidates before rendering: ", candidateSentences);
 
-    view.renderCandidates(candidateSentences, lambda, rawSentences, query_slimSelect.selected());
+    view.renderCandidates(candidateSentences, rawSentences, query_slimSelect.selected());
 }
 
 // Ping the backend to get a new ranking.
@@ -267,7 +279,10 @@ window.onload = function() {
     autoPopulateButton.onclick = autoPopulateHandler;
 
     let nextButton = document.getElementById("next-button");
-    nextButton.onclick = nextButtonHandler;
+    nextButton.onclick = nextHandler;
+
+    let newQuestionButton = document.getElementById("new-question-button");
+    newQuestionButton.onclick = newQuestionHandler;
 
     document.getElementById("summary-view").ondragover = (ev => ev.preventDefault());
     document.getElementById("summary-view").ondrop = onDropInSummarySection;
