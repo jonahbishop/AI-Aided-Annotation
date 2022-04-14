@@ -1,4 +1,4 @@
-export function uploadDocument(doc, cb, errorCb) {
+export function uploadChapter(doc, cb, errorCb) {
     let xhr = new XMLHttpRequest();
     xhr.open("POST", "/upload", true);
     xhr.setRequestHeader('Content-Type', 'application/json');

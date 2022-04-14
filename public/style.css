@@ -1,6 +1,10 @@
-.summary-row {
+.middle-row {
     height: 600px;
     overflow: auto;
+}
+
+.bottom-row {
+    min-height: 600px;
 }
 
 .lol-confusing-center {
