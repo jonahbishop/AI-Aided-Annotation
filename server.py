@@ -137,7 +137,7 @@ def logged_in():
 def logout():
   if "email" in session:
     session.pop("email", None)
-    return render_template("signout.html")
+    return render_template("intro.html")
   else:
     return render_template('register.html')
 

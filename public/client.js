@@ -1,7 +1,5 @@
 import { DEMO_ARTICLE_TEXT, DEMO_journal_article, DEMO_Legal_Reputation } from "./demo_article.js";
-import { TOP_SENTENCES } from "./top_sentences.js";
-import { autocomplete } from "./autocomplete.js";
-import { uploadDocument, rank, phase_two } from "./api.js";
+import { uploadChapter, rank, phase_two } from "./api.js";
 import { View } from "./view.js";
 const SlimSelect = window.SlimSelect;
 
@@ -10,14 +8,14 @@ let view;
 
 // These change when a user uploads a new document
 let rawSentences = []; // List: ID->sentence
-let rawDocument = "";
+let rawChapter = "";
 let keywords = []; // might not need this?
 let sessionID = null;
 
 // These are involved in the ranking.
 let candidateSentences = []; // list: [{ID, lscore, rscore, score, rank, prev_rank}, ...]
 let summarySentences = []; // [IDs]
-let lambda = 0.15;
+let lambda = 0.15; // set the value of lambda here
 
 // Information about sentence selection
 let selectedSentence = null; // ID?
@@ -93,7 +91,7 @@ let autoPopulateHandler = function() {
     }
 }
 
-let nextButtonHandler = function() {
+let nextHandler = function() {
 
     console.log("Next Pressed")
 
@@ -104,8 +102,20 @@ let nextButtonHandler = function() {
 
     phase_two(sessionID, summarySentences, handleSimResults);
 
-    const element = document.getElementById("bottom-row");
+    const element = document.getElementById("scroll-here");
     element.scrollIntoView()
+}
+
+let newQuestionHandler = function() {
+
+    console.log("New Question Pressed")
+
+    if (sessionID === null) {
+        alert("Please upload a document first!");
+        return;
+    }
+
+    view.renderNewQuestion()
 }
 
 let handleSimResults = function(res) {
@@ -151,7 +161,7 @@ function handleRerankResult(res) {
 
     // console.log("Candidates before rendering: ", candidateSentences);
 
-    view.renderCandidates(candidateSentences, lambda, rawSentences, query_slimSelect.selected());
+    view.renderCandidates(candidateSentences, rawSentences, query_slimSelect.selected());
 }
 
 // Ping the backend to get a new ranking.
@@ -185,7 +195,7 @@ var query_slimSelect = new SlimSelect({
 window.sselect = query_slimSelect; // for debugging :)
 
 let uploadClickHandler = function() {
-    let rawdoc = document.getElementById("rawdoctextarea").value;
+    let rawchap = document.getElementById("rawdoctextarea").value;
 
     // save the sessionID
     let uploadSuccessFn = function(res) {
@@ -195,7 +205,7 @@ let uploadClickHandler = function() {
         sessionID = res["session_id"];
         rawSentences = res["sentences"].map(s => s[0]);
         keywords = res["keywords"]; // TODO: possibly map
-        rawDocument = rawdoc;
+        rawChapter = rawchap;
 
         // reset some variables
         candidateSentences = [];
@@ -226,7 +236,7 @@ let uploadClickHandler = function() {
         }
 
         // display the raw document
-        view.renderRawDocument(rawDocument, rawSentences);
+        view.renderRawChapter(rawChapter, rawSentences);
         // discard current summary
         view.resetSummary();
 
@@ -238,7 +248,7 @@ let uploadClickHandler = function() {
         document.getElementById("upload-results-error").innerHTML = res;
     };
 
-    uploadDocument(rawdoc, uploadSuccessFn, uploadErrorFn);
+    uploadChapter(rawchap, uploadSuccessFn, uploadErrorFn);
     document.getElementById("btn-modal-close").click();
 
 };
@@ -256,7 +266,7 @@ window.onload = function() {
     }
 
     view = new View(
-        document.getElementById("document-view"),
+        document.getElementById("chapter-view"),
         document.getElementById("ranking-view"),
         document.getElementById("summary-view"),
         document.getElementById("generated-summary-view"),
@@ -269,7 +279,10 @@ window.onload = function() {
     autoPopulateButton.onclick = autoPopulateHandler;
 
     let nextButton = document.getElementById("next-button");
-    nextButton.onclick = nextButtonHandler;
+    nextButton.onclick = nextHandler;
+
+    let newQuestionButton = document.getElementById("new-question-button");
+    newQuestionButton.onclick = newQuestionHandler;
 
     document.getElementById("summary-view").ondragover = (ev => ev.preventDefault());
     document.getElementById("summary-view").ondrop = onDropInSummarySection;

@@ -1,8 +1,8 @@
 // The "View" class handles how to render stuff to the page.
 
 export class View {
-    constructor(rawDocumentContainer, candidatesContainer, summaryContainer, generatedSummaryContainer, dataContainer) {
-        this.rawDocumentContainer = rawDocumentContainer;
+    constructor(rawChapterContainer, candidatesContainer, summaryContainer, generatedSummaryContainer, dataContainer) {
+        this.rawChapterContainer = rawChapterContainer;
         this.candidatesContainer = candidatesContainer;
         this.summaryContainer = summaryContainer;
         this.generatedSummaryContainer = generatedSummaryContainer;
@@ -13,70 +13,26 @@ export class View {
         this.candidateIDToContainer = {};
     }
 
-    renderRawDocument(rawDocument, sentences) {
+    renderRawChapter(rawChapter, sentences) {
 
-        this.rawDocumentContainer.innerHTML = "";
+        this.rawChapterContainer.innerHTML = "";
 
         console.log("INCLUDES TEST: ");
         for (let s of sentences) {
-            if (!rawDocument.includes(s)) {
+            if (!rawChapter.includes(s)) {
                 console.log(s);
             }
         }
 
 
         // This is very not robust :)
-        for (let paragraph of rawDocument.split("\n\n")) {
+        for (let paragraph of rawChapter.split("\n\n")) {
             let p = document.createElement("p");
             let txt = document.createTextNode(paragraph);
 
-            this.rawDocumentContainer.append(p);
+            this.rawChapterContainer.append(p);
             p.append(txt);
         }
-    }
-
-    // This is the version where lambda=0 has meaning
-    addSentenceVisuals(lscore, rscore, score, minScore, maxScore, lambda) {
-
-        let row = document.createElement("div");
-        row.classList.add("row");
-        let container = document.createElement("div");
-        container.classList.add("col-12");
-
-        // To get the line to cover more space, we scale based on this value.
-        // Without this, if the maximum score was 0.01, our visualization would be a tiny, tiny sliver of a line. :)
-        let m = 1 / Math.max(-minScore, maxScore);
-
-        // What we want:
-        // dark green bar going from this -rscore to score
-        // light-green bar going from score to lscore.
-
-        let lowScoreX = 125 - 100 * rscore * m;
-        let scoreX = 125 + 100 * score * m;
-        let highScoreX = 125 + 100 * lscore * m;
-
-        let prettyScore = Math.round(score * 1000) / 1000;
-
-        container.innerHTML = `
-    <svg width="256px" height="40px">
-    
-      <rect x="${lowScoreX}" y="12" rx="1" ry="1" width="${scoreX-lowScoreX}" height="6"
-            style="opacity:0.7" />
-            
-      <rect x="${scoreX}" y="12" rx="1" ry="1" width="${highScoreX-scoreX}" height="6"
-            style="opacity:0.3" />
-            
-        <line x1="${scoreX}" y1="7" x2="${scoreX}" y2="23" style="stroke:rgb(140,140,140);stroke-width:1" />
-        <text x="${scoreX}" y="33" font-size="10px" fill="grey">${prettyScore}</text>
-        
-        <line x1="125" y1="2" x2="125" y2 = "28" style="stroke:grey;stroke-width:1" stroke-dasharray="2 1" />
-        
-    </svg>
-    `;
-
-        row.appendChild(container);
-        return row;
-
     }
 
     // gonna be haaaaacky
@@ -102,15 +58,11 @@ export class View {
 
 
     // TODO: complete this function. Document what 'candidates' is :)
-    renderCandidates(candidates, lambda, rawSentences, keywords) {
+    renderCandidates(candidates, rawSentences, keywords) {
         // candidates is a list: [{ID, lscore, rscore, score, rank, prev_rank}, ...]
 
         this.candidatesContainer.innerHTML = ""; // reset the container
         this.candidateIDToContainer = {};
-
-        // We need these later on, but we only need to calculate them once, so we do it outside of the loop.
-        let maxScore = Math.max(...candidates.map(x => x.lscore));
-        let minScoreV2 = Math.min(...candidates.map(x => -x.rscore));
 
         for (let candidate of candidates.slice(0, 25)) {
 
@@ -136,9 +88,6 @@ export class View {
             let sentenceCol = document.createElement("div");
             sentenceCol.classList.add("col-10");
 
-            let rankChangeCol = document.createElement("div");
-            rankChangeCol.classList.add("col-2");
-
             let sentenceHTML = this.wrapKeywordsInSentence(rawSentences[candidate.ID], keywords);
 
             let [r, prevR] = [candidate.rank, candidate.prev_rank];
@@ -147,21 +96,13 @@ export class View {
                 let delta = prevR - r;
                 rankChange = `${delta > 0 ? '+' : ''}${delta}`;
             }
-            rankChange = document.createTextNode(rankChange);
-
-
-            let scoreViz = this.addSentenceVisuals(candidate.lscore, candidate.rscore, candidate.score, minScoreV2, maxScore, lambda);
 
             // Assemble!
-            // Note: It'd be clearer if we just set innerHTML... 
             this.candidatesContainer.appendChild(outer);
             outer.appendChild(cardBody);
             cardBody.appendChild(row);
             row.appendChild(sentenceCol);
             sentenceCol.innerHTML = sentenceHTML;
-            row.appendChild(rankChangeCol);
-            rankChangeCol.appendChild(rankChange);
-            cardBody.appendChild(scoreViz);
         }
     }
 
@@ -208,17 +149,13 @@ export class View {
         this.generatedSummaryContainer.innerHTML = ""; // reset the container
         this.dataContainer.innerHTML = ""; // reset the container
 
-        //console.log(similarSentences['39'])
-
+        // iterate over the selected diverse sentences
         for (let sentenceID of summarySentences) {
 
             let outer = document.createElement("div");
             outer.classList.add("card");
             outer.classList.add("candidate-card");
             this.candidateIDToContainer[sentenceID] = outer;
-
-            // TODO: implement selection
-            outer.addEventListener("click", function() { console.log("clicked: ", sentenceID) }, true);
 
             let inner = document.createElement("div");
             inner.classList.add("card-body");
@@ -235,19 +172,39 @@ export class View {
             inner.innerHTML = textPlusSum;
         }
 
-        // add the text box for the annotated data column
-        let outer2 = document.createElement("div");
-        outer2.classList.add("card");
-        outer2.classList.add("data-card");
+        // add the keyword box for the annotated data column
+        // TODO: Get the keywords from the sentences
+        let keywordBox = document.createElement("div");
+        keywordBox.classList.add("card");
+        keywordBox.classList.add("data-card");
 
-        let inner2 = document.createElement("textarea");
-        inner2.classList.add("card-body");
-        inner2.style.width = "100%";
-        //inner2.setAttribute("style", "height:" + inner.offsetHeight + "px")
+        let innerKeywordBox = document.createElement("div");
+        innerKeywordBox.classList.add("card-body");
+        innerKeywordBox.innerHTML = "Keywords will go here"
 
-        outer2.setAttribute("style", "height:" + (this.generatedSummaryContainer.offsetHeight - 18) + "px")
+        this.dataContainer.appendChild(keywordBox);
+        keywordBox.appendChild(innerKeywordBox);
+    }
 
-        this.dataContainer.appendChild(outer2);
-        outer2.appendChild(inner2);
+    renderNewQuestion() {
+        let outer = document.createElement("div");
+        outer.classList.add("card");
+        outer.classList.add("q&a-card");
+        outer.classList.add("p-1");
+
+        let question = document.createElement("textarea");
+        question.classList.add("card-body");
+        question.classList.add("p-1");
+        question.placeholder = "Type Question Here"
+
+        let answer = document.createElement("textarea");
+        answer.classList.add("card-body");
+        answer.classList.add("p-1");
+        answer.placeholder = "Type Answer Here"
+
+        // Assemble!
+        this.dataContainer.appendChild(outer);
+        outer.appendChild(question);
+        outer.appendChild(answer);
     }
 }
