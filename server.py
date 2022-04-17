@@ -31,6 +31,7 @@ db = client.get_database('total_records')
 records = db.register
 
 #Use json_request(s) instead of request.json[s]. If you really need request.json, use json_request().
+
 json_request = lambda s="" : request.json[s] if s else request.json
 
 # SESSIONS maps a unique ID to all the saved information for a document,
@@ -158,9 +159,6 @@ def apply_kr_hello(response):
 @app.route('/')
 def homepage():
   """Displays the homepage."""
-  # TODO: use intro.html when we're done testing the API.
-  # return render_template('api_test.html')
-  # return render_template('index.html')
   return render_template('intro.html')
 
 
@@ -247,10 +245,7 @@ def phase_two():
     + Expects requests.json['session_id'] to be session_id as usual.
     + Expects requests.json['top_sentences'] to be a list of IDs for the top sentences.
         (IDs are the same as in the rank method)
-    Return: A jsonified dictionary whose keys are the top_sentence's strings (Not their IDs) and whose values
-       are the cloud sentences.
-    Isaac's note: If you want the front-end to also receive the top_sentences similarity scores, that can be added
-                  easily.
+    Return: A jsonified dictionary whose keys are the top_sentence's IDs and whose values are the cloud sentences'.
   """
   return jsonify({"similar_sentences": _testable_phase_two(int(json_request('session_id')), json_request('top_sentences'))})
 
@@ -260,13 +255,13 @@ def _testable_phase_two(sessionID, top_sentence_IDs, n=mmr.N_SIM_SENTENCES):
   :param sessionID: The integer sessionID
   :type sessionID: int
   :param top_sentence_IDs: The IDs for the sentences around which to generate the cloud_sentences
-  :type top_sentence_IDs: [int]
+  :type top_sentence_IDs: list of int
   :param n: The number of cloud sentences to generate for each top_sentence. If you want this to be user-controlled,
             you can set that up in the shim. If you just want to change how many are generated without giving the user
             control, just change N_SIM_SENTENCES in mmr.py
   :type n: int
   :return: A dict mapping the strings of the top_sentences to the cloud strings
-  :rtype: {str:[str]}
+  :rtype: dict[str, list[str]]
   """
   curr_session = SESSIONS[sessionID]
   all_sent_objs = mmr.processFile(sessionID, [pair[0] for pair in curr_session['sentences']])
@@ -282,7 +277,7 @@ def _testable_phase_two(sessionID, top_sentence_IDs, n=mmr.N_SIM_SENTENCES):
   return sim_sentences
 
 
-@app.route('/rank', methods=['POST'])
+@app.post('/rank')
 def rank():
   """
   Rank sentences from an existing session.
@@ -311,7 +306,6 @@ def rank():
   return the raw score for each sentence. But: this limits what we can
   visualize on the front-end.
   """
-
   res = {}
   summary = []
   sentences = []
@@ -326,27 +320,17 @@ def rank():
       sentences.append(i)
   print('summary', summary, summaryIDs)
   mmr_scores = mmr.summary_generator(sessionID, sentences, keywords, summary)
-  # sent, mmr score, LH score, RH score
-
   for index, out in mmr_scores.iterrows():
     for se, s_id in curr_session["sentences"]:
-
       if out['sent'] == se:
         mmr_scores.at[index, 'sentID'] = int(s_id)
-
-  # res = mmr_scores.loc[:, ["sentID", 'lscore', 'rscore', 'sent']];
-  # res.set_index("sentID", inplace = True);
-  # res.columns =  [ "LSimScr", "RSimScr", "sentence"];
-  # res = res.to_dict()
   res = mmr_scores.to_json(orient ='index')
   print('pes', res)
   if not all(arg in json_request() for arg in ('session_id', 'keywords', 'summary')):
     print("Malformed request to '/rank' endpoint:", json_request())
     return jsonify({})
-
-  # TODO: populate res with the scores for each sentence (excluding the summary sentences)
   return res
-  # return jsonify(res)
+
 
 @app.route("/generate_json", methods=["POST"])
 def generate_json():
