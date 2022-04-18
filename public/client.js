@@ -118,14 +118,60 @@ let newQuestionHandler = function() {
     view.renderNewQuestion()
 }
 
+let exportHandler = function() {
+
+    console.log("Export Pressed")
+
+    if (sessionID === null) {
+        alert("Please upload a document first!");
+        return;
+    }
+
+    // get the generated summary text
+    let genSumCol = document.getElementsByClassName("gen-sum-body")
+    let genSumText = "";
+    for (const item of genSumCol) {
+        genSumText += item.innerText;
+    }
+
+    // get the keywords
+    let keywords = document.getElementsByClassName("keywords-body")
+    let keywordsText = "";
+    for (const item of keywords) {
+        keywordsText += item.innerText;
+    }
+
+    // get the questions and answers
+    const questions = document.getElementsByClassName("question")
+    const answers = document.getElementsByClassName("answer")
+    let questionsAndAnswers = {}
+    for (let i = 0; i < questions.length; i++) {
+        questionsAndAnswers[questions[i].value] = answers[i].value
+    }
+
+    // put it all together
+    let dict = { "summary": genSumText, "keywords": keywordsText, "questionsAndAnswers": questionsAndAnswers }
+    let jsonData = JSON.stringify(dict)
+    download(jsonData, 'rich_data.json', 'application/json');
+}
+
+function download(content, fileName, contentType) {
+    var a = document.createElement("a");
+    var file = new Blob([content], { type: contentType });
+    a.href = URL.createObjectURL(file);
+    a.download = fileName;
+    a.click();
+}
+
 let handleSimResults = function(res) {
 
 
     res = JSON.parse(res);
 
-    console.log(res.similar_sentences)
+    //console.log(res.similar_sentences)
+    //console.log(res.keywords)
 
-    view.renderGeneratedSummary(summarySentences, rawSentences, res.similar_sentences);
+    view.renderGeneratedSummary(summarySentences, rawSentences, res.similar_sentences, res.keywords.slice(0, 5));
 }
 
 
@@ -283,6 +329,9 @@ window.onload = function() {
 
     let newQuestionButton = document.getElementById("new-question-button");
     newQuestionButton.onclick = newQuestionHandler;
+
+    let exportButton = document.getElementById("export-button");
+    exportButton.onclick = exportHandler;
 
     document.getElementById("summary-view").ondragover = (ev => ev.preventDefault());
     document.getElementById("summary-view").ondrop = onDropInSummarySection;

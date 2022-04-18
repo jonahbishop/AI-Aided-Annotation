@@ -1,10 +1,6 @@
 from rake_nltk import Metric, Rake
 import nltk
-import os
 import math
-import string
-import re
-import json
 import sentence
 from nltk.corpus import stopwords
 import pandas as pd

@@ -19,21 +19,20 @@
         Video Demo
     </h2>
     <! --- just left it here to leave a place for later video --->
+    Coming soon...
     <h2>
-        MMR in Text Summarization
+        MMR Aided Annotation
     </h2>
     <ul>
-        Text summarization is the process of summarizing concrete information in large texts for quicker examination and consumption. The resulting short, informative summaries can help readers determine whether the documents are within their interest before
-        going into details.
-
-        <br> &nbsp&nbsp A common approach is <b>Extractive</b> Text Summarization. The main goal is to identify the significant sentences of the original document and add them to the summary. However, this task can be challenging and time-consuming even
-        to the most experienced writer/reporter. It typically requires that person to go through the entire document to locate those key sentences.
-
-        <br> &nbsp&nbsp MMR can help the writer locate those key sentences based on the most relevant words. The idea behind this is that words of higher frequency are more significant than others. Hence, the sentences containing highly frequent are more
-        important. When the user specifies a query including key terms, MMR can rank sentences based on their relevance to the searched query. After the user selects some sentences, with an adjustable λ factor, they can further choose between <b>accuracy</b>        (in terms of relevancy to the search query) and <b>diversity</b> (as compared with the selected sentences).
-
-        <p style="font-size:30px; color:#FF5A00"><b>Worflow</b></p>
-
+        Human annotation of long documents is a very important task in training and evaluation in NLP. The process starts with the human annotators reading over the document in its entirety. Next, the annotator must summarize the document before annotating based
+        on the summarization. In our client’s case, the chosen long documents are electronic theses and dissertations (ETDs) which are often 100-150 pages minimum thereby making it a time consuming and expensive process to annotate. More specifically,
+        the ETDs are annotated by chapter as content can vary significantly in chapter by chapter basis. These annotations generated will be used to create a knowledge base to help evaluate downstream tasks such as summarization, topic modeling, and question
+        answering.
+    </ul>
+    <h2>
+        Workflow
+    </h2>
+    <ul>
         &nbsp&nbsp The below figure depicts the workflow of our explorable MMR system. We can observe how the two actors (i.e., Human and AI) part of this workflow complement each other in summarizing text.
     </ul>
     <img src="https://cdn.glitch.me/af46e606-1885-4918-bf6f-946722a02e34%2Fworkflow.PNG?v=1638739141493" alt="workflow" width="60%">

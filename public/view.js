@@ -145,9 +145,16 @@ export class View {
 
     // summarySentences: List[IDs]
     // rawSentences: List[Text]  (index is ID)
-    renderGeneratedSummary(summarySentences, rawSentences, similarSentences) {
+    renderGeneratedSummary(summarySentences, rawSentences, similarSentences, keywords) {
         this.generatedSummaryContainer.innerHTML = ""; // reset the container
         this.dataContainer.innerHTML = ""; // reset the container
+
+        let keyword = []
+        for (let i = 0; i < keywords.length; i++) {
+            keyword.push(keywords[i][0])
+        }
+
+        console.log(keyword)
 
         // iterate over the selected diverse sentences
         for (let sentenceID of summarySentences) {
@@ -158,12 +165,12 @@ export class View {
             this.candidateIDToContainer[sentenceID] = outer;
 
             let inner = document.createElement("div");
-            inner.classList.add("card-body");
+            inner.classList.add("gen-sum-body");
 
             // add the diverse sentence and all the similar ones to a textNode
             let textPlusSum = `<span class="ds-rank">${rawSentences[sentenceID]}</span>`;
             for (let simSentence of similarSentences[sentenceID]) {
-                textPlusSum += rawSentences[simSentence];
+                textPlusSum += this.wrapKeywordsInSentence(rawSentences[simSentence], keyword);
             }
 
             // Assemble!
@@ -180,7 +187,8 @@ export class View {
 
         let innerKeywordBox = document.createElement("div");
         innerKeywordBox.classList.add("card-body");
-        innerKeywordBox.innerHTML = "Keywords will go here"
+        innerKeywordBox.classList.add("keywords-body");
+        innerKeywordBox.innerHTML = keyword
 
         this.dataContainer.appendChild(keywordBox);
         keywordBox.appendChild(innerKeywordBox);
@@ -193,12 +201,14 @@ export class View {
         outer.classList.add("p-1");
 
         let question = document.createElement("textarea");
-        question.classList.add("card-body");
+        question.classList.add("question");
         question.classList.add("p-1");
+        question.classList.add("card-body");
         question.placeholder = "Type Question Here"
 
         let answer = document.createElement("textarea");
-        answer.classList.add("card-body");
+        answer.classList.add("answer");
+        question.classList.add("card-body");
         answer.classList.add("p-1");
         answer.placeholder = "Type Answer Here"
 

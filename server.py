@@ -249,7 +249,8 @@ def phase_two():
     Isaac's note: If you want the front-end to also receive the top_sentences similarity scores, that can be added
                   easily.
   """
-  return jsonify({"similar_sentences": _testable_phase_two(int(json_request('session_id')), json_request('top_sentences'))})
+  sim_sentences, keywords = _testable_phase_two(int(json_request('session_id')), json_request('top_sentences'))
+  return jsonify({"similar_sentences": sim_sentences, "keywords" : keywords})
 
 
 def _testable_phase_two(sessionID, top_sentence_IDs, n=mmr.N_SIM_SENTENCES):
@@ -273,10 +274,11 @@ def _testable_phase_two(sessionID, top_sentence_IDs, n=mmr.N_SIM_SENTENCES):
   print("Sim_sentences {str:[str]}:\n", sim_sentences)
   IDify = lambda sent : all_sent_objs.index(sent) if isinstance(sent, str) else list(map(IDify, sent)) #This works even though it's a str-sentence comparison because I
   #overrode sentence's __eq__
+  keywords = mmr.keyword_generator(sim_sentences)
   sim_sentences = {IDify(key) : IDify(val) for key, val in sim_sentences.items()} #O(n) calls to O(n) IDify, could be
   #reduced to nlogn with an ID lookup table
   print("\nSim_sentences {int:[int]}:\n", sim_sentences)
-  return sim_sentences
+  return sim_sentences, keywords
 
 
 @app.route('/rank', methods=['POST'])
