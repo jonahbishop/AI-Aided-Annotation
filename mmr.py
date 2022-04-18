@@ -386,15 +386,15 @@ def n_sim_sentences(top_sentences, other_sentences, all_sentences, n = N_SIM_SEN
    are n-length lists of str from most similar to least similar. This can probably be significantly optimized.
   :param top_sentences: The sentences around which to generate the cloud sentences.
                         NOTE: these are of the sentence class from sentence.py
-  :type top_sentences: [sentence]
+  :type top_sentences: list[sentence.sentence]
   :param other_sentences: The sentence pool from which to draw the cloud sentences
-  :type other_sentences: [sentence]
+  :type other_sentences: list[sentence.sentence]
   :param all_sentences: The entire set of sentences in the document
-  :type all_sentences: [sentence]
+  :type all_sentences: list[sentence.sentence]
   :param n: The number of cloud sentences to generate
   :type n: int
   :return: A dict mapping the strings of the top_sentences to the cloud strings
-  :rtype: {str:[str]}
+  :rtype: dict[str, list[str]]
   """
   similarities = {}
   IDF = IDFs(all_sentences)
@@ -402,7 +402,7 @@ def n_sim_sentences(top_sentences, other_sentences, all_sentences, n = N_SIM_SEN
     similarities[top_sentence.getOriginalWords()] = []  # hashing by entire sentence might be an inefficient way to do this, might not matter
     for other_sentence in other_sentences:
       similarities[top_sentence.getOriginalWords()].append((sentenceSim(top_sentence, other_sentence, IDF), other_sentence.getOriginalWords()))
-  similarities = {k: sorted(v, reverse=True) for k, v in similarities.items()}
+  similarities = {k: sorted(v, reverse=True) for k, v in similarities.items()}#These comparisons should be memoized
   sim_sentences = {t_s.getOriginalWords(): [] for t_s in top_sentences}
   cloud_sents = set()
   indices = {t_s.getOriginalWords(): 0 for t_s in top_sentences}
