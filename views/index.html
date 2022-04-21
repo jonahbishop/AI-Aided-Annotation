@@ -30,8 +30,8 @@
                 <div class="row" style="width:100%">
                     <div class="col-8">
                         <button type="button" class="btn btn-light" id="demo-1">Covid</button>
-                        <button type="button" class="btn btn-light" id="demo-2">AI + Math</button>
-                        <button type="button" class="btn btn-light" id="demo-3">Legal</button>
+                        <button type="button" class="btn btn-light" id="demo-2">Chapter 2</button>
+                        <button type="button" class="btn btn-light" id="demo-3">Chapter 3</button>
                     </div>
                     <div class="col-1"></div>
                     <div class="col-3">
@@ -79,6 +79,32 @@
                                 <select id="query" multiple width=400>
                                 </select>
                             </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="p-1">
+                        <div class="row">
+                            <div class="col-2">
+                                <small class="align-middle">1</small>
+                            </div>
+                            <div class="col-8">
+                                Number of Auto-populate Sentences
+                                <input type="range" min="1" max="15" class="form-range align-middle" id="autoPopulateSlider" />
+                                <p>Value: <span id="demo"></span></p>
+                            </div>
+                            <div class="col-2">
+                                <small class="align-middle">15</small>
+                            </div>
+                            <script>
+                                var slider = document.getElementById("autoPopulateSlider");
+                                var output = document.getElementById("demo");
+                                output.innerHTML = slider.value;
+
+                                slider.oninput = function() {
+                                    output.innerHTML = this.value;
+                                }
+                            </script>
                         </div>
                     </div>
                 </div>

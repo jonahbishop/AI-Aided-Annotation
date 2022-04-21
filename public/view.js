@@ -170,7 +170,7 @@ export class View {
             // add the diverse sentence and all the similar ones to a textNode
             let textPlusSum = `<span class="ds-rank">${rawSentences[sentenceID]}</span>`;
             for (let simSentence of similarSentences[sentenceID]) {
-                textPlusSum += this.wrapKeywordsInSentence(rawSentences[simSentence], keyword);
+                textPlusSum += " " + this.wrapKeywordsInSentence(rawSentences[simSentence], keyword);
             }
 
             // Assemble!

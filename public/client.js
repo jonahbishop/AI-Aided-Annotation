@@ -18,14 +18,23 @@ let summarySentences = []; // [IDs]
 let lambda = 0.15; // set the value of lambda here
 
 // Information about sentence selection
-let selectedSentence = null; // ID?
+let numAutoSentences = getNumAutoSentences(); // ID?
 
 // calculate the final MMR score
 function mmrScore(sim1, sim2, lambda) {
     return lambda * sim1 - (1 - lambda) * sim2;
 }
 
+function getNumAutoSentences() {
+    let autoPopulateSlider = document.getElementById("autoPopulateSlider");
+    // Note: the slider is an int from 0 to 100, but we want a float from 0 to 1.
+    return autoPopulateSlider.valueAsNumber;
+}
 
+function handleAutoSliderChange() {
+
+    numAutoSentences = getNumAutoSentences();
+}
 
 ////////////////////////
 // Drop Handlers
@@ -67,11 +76,10 @@ let autoPopulateHandler = function() {
 
     // discard current summary
     view.resetSummaryToNothing();
-    const numDiverse = 5;
 
-    console.log("There will be " + numDiverse + " sentences in summary as a result of auto populate");
+    console.log("There will be " + numAutoSentences + " sentences in summary as a result of auto populate");
 
-    for (let i = 0; i < numDiverse; i++) {
+    for (let i = 0; i < numAutoSentences; i++) {
 
         const sentenceID = candidateSentences[0].ID;
         console.log(sentenceID)
@@ -317,6 +325,9 @@ window.onload = function() {
         document.getElementById("summary-view"),
         document.getElementById("generated-summary-view"),
         document.getElementById("data-view"));
+
+    let autoPopulateSlider = document.getElementById("autoPopulateSlider");
+    autoPopulateSlider.onchange = handleAutoSliderChange;
 
     let uploadButtonModal = document.getElementById("upload_button_modal");
     uploadButtonModal.onclick = uploadClickHandler;
