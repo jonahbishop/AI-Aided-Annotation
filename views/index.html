@@ -62,7 +62,7 @@
       -->
         <!-- Button trigger modal -->
         <div class="px-5 py-5 border">
-            <!-- TOP ROW (upload, query, lambda slider) -->
+            <!-- TOP ROW (upload, query, auto-populate slider) -->
             <div class="row gx-2 py-3">
                 <div class="col-md-2">
                     <div class="p-1">
@@ -85,24 +85,31 @@
                 <div class="col-md-4">
                     <div class="p-1">
                         <div class="row">
-                            <div class="col-2">
-                                <small class="align-middle">1</small>
-                            </div>
                             <div class="col-8">
                                 Number of Auto-populate Sentences
                                 <input type="range" min="1" max="15" class="form-range align-middle" id="autoPopulateSlider" />
-                                <p>Value: <span id="demo"></span></p>
+                                <p>Value: <span id="auto_value"></span></p>
                             </div>
-                            <div class="col-2">
-                                <small class="align-middle">15</small>
+                            <div class="col-8">
+                                Number of Similar Selected Sentences
+                                <input type="range" min="1" max="15" class="form-range align-middle" id="similarSentencesSlider" />
+                                <p>Value: <span id="sim_value"></span></p>
                             </div>
                             <script>
-                                var slider = document.getElementById("autoPopulateSlider");
-                                var output = document.getElementById("demo");
+                                var slider = document.getElementById("similarSentencesSlider");
+                                var output = document.getElementById("sim_value");
                                 output.innerHTML = slider.value;
 
                                 slider.oninput = function() {
                                     output.innerHTML = this.value;
+                                }
+
+                                var slider2 = document.getElementById("autoPopulateSlider");
+                                var output2 = document.getElementById("auto_value");
+                                output2.innerHTML = slider2.value;
+
+                                slider2.oninput = function() {
+                                    output2.innerHTML = this.value;
                                 }
                             </script>
                         </div>

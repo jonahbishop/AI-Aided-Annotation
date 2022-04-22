@@ -57,7 +57,7 @@ export function rank(sessionId, keywords, summary, cb, errorCb) {
 
 }
 
-export function phase_two(sessionId, summary, cb, errorCb) {
+export function phase_two(sessionId, summary, numSimSentences, cb, errorCb) {
     let xhr = new XMLHttpRequest();
     xhr.open("POST", "/phase_two", true);
     xhr.setRequestHeader('Content-Type', 'application/json');
@@ -79,7 +79,8 @@ export function phase_two(sessionId, summary, cb, errorCb) {
 
     let payload = JSON.stringify({
         session_id: sessionId,
-        top_sentences: summary
+        top_sentences: summary,
+        num_similar_sentences: numSimSentences
     });
     // console.log("Sending the following to the '/rank' endpoint:\n", JSON.parse(payload));
     // console.log(payload);

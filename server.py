@@ -160,7 +160,7 @@ def phase_two():
         (IDs are the same as in the rank method)
     Return: A jsonified dictionary whose keys are the top_sentence's IDs and whose values are the cloud sentences'.
   """
-  sim_sentences, keywords = _testable_phase_two(int(json_request('session_id')), json_request('top_sentences'))
+  sim_sentences, keywords = _testable_phase_two(int(json_request('session_id')), json_request('top_sentences'), json_request('num_similar_sentences'))
   return jsonify({"similar_sentences": sim_sentences, "keywords" : keywords})
 
 

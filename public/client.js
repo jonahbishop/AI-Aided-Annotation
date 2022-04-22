@@ -18,22 +18,33 @@ let summarySentences = []; // [IDs]
 let lambda = 0.15; // set the value of lambda here
 
 // Information about sentence selection
-let numAutoSentences = getNumAutoSentences(); // ID?
+let numAutoSentences = getNumAutoSentences();
+let numSimSentences = getNumSimSentences();
 
 // calculate the final MMR score
 function mmrScore(sim1, sim2, lambda) {
     return lambda * sim1 - (1 - lambda) * sim2;
 }
 
+
 function getNumAutoSentences() {
     let autoPopulateSlider = document.getElementById("autoPopulateSlider");
-    // Note: the slider is an int from 0 to 100, but we want a float from 0 to 1.
     return autoPopulateSlider.valueAsNumber;
 }
 
 function handleAutoSliderChange() {
 
     numAutoSentences = getNumAutoSentences();
+}
+
+function getNumSimSentences() {
+    let similarSentencesSlider = document.getElementById("similarSentencesSlider");
+    return similarSentencesSlider.valueAsNumber;
+}
+
+function handleSimSliderChange() {
+
+    numSimSentences = getNumSimSentences();
 }
 
 ////////////////////////
@@ -108,7 +119,7 @@ let nextHandler = function() {
         return;
     }
 
-    phase_two(sessionID, summarySentences, handleSimResults);
+    phase_two(sessionID, summarySentences, numSimSentences, handleSimResults);
 
     const element = document.getElementById("scroll-here");
     element.scrollIntoView()
@@ -328,6 +339,9 @@ window.onload = function() {
 
     let autoPopulateSlider = document.getElementById("autoPopulateSlider");
     autoPopulateSlider.onchange = handleAutoSliderChange;
+
+    let similarSentencesSlider = document.getElementById("similarSentencesSlider");
+    similarSentencesSlider.onchange = handleSimSliderChange;
 
     let uploadButtonModal = document.getElementById("upload_button_modal");
     uploadButtonModal.onclick = uploadClickHandler;
