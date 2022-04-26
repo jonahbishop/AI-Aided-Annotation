@@ -225,7 +225,14 @@ export class View {
 
         for (let i = 0; i < genSumItems.length; i++) {
             // console.log(genSumItems[i].innerText);
-            genSumItems[i].innerHTML = this.wrapKeywordsInSentence(genSumItems[i].innerHTML, keywords)
+            let sentences = genSumItems[i].innerText.split(".");
+            console.log(sentences.length);
+            let newText = `<span class="ds-rank">${this.wrapKeywordsInSentence(sentences[0], keywords)}</span>`;
+            for (let j = 1; j < sentences.length; j++) {
+                newText += ". " + this.wrapKeywordsInSentence(sentences[j], keywords);
+            }
+
+            genSumItems[i].innerHTML = newText + ".";
         }
     }
 }
