@@ -154,7 +154,7 @@ export class View {
             keyword.push(keywords[i][0])
         }
 
-        console.log(keyword)
+        // console.log(keyword)
 
         // iterate over the selected diverse sentences
         for (let sentenceID of summarySentences) {
@@ -168,7 +168,7 @@ export class View {
             inner.classList.add("gen-sum-body");
 
             // add the diverse sentence and all the similar ones to a textNode
-            let textPlusSum = `<span class="ds-rank">${rawSentences[sentenceID]}</span>`;
+            let textPlusSum = `<span class="ds-rank">${this.wrapKeywordsInSentence(rawSentences[sentenceID], keyword)}</span>`;
             for (let simSentence of similarSentences[sentenceID]) {
                 textPlusSum += " " + this.wrapKeywordsInSentence(rawSentences[simSentence], keyword);
             }
@@ -181,17 +181,17 @@ export class View {
 
         // add the keyword box for the annotated data column
         // TODO: Get the keywords from the sentences
-        let keywordBox = document.createElement("div");
-        keywordBox.classList.add("card");
-        keywordBox.classList.add("data-card");
+        // let keywordBox = document.createElement("div");
+        // keywordBox.classList.add("card");
+        // keywordBox.classList.add("data-card");
 
-        let innerKeywordBox = document.createElement("div");
-        innerKeywordBox.classList.add("card-body");
-        innerKeywordBox.classList.add("keywords-body");
-        innerKeywordBox.innerHTML = keyword
+        // let innerKeywordBox = document.createElement("div");
+        // innerKeywordBox.classList.add("card-body");
+        // innerKeywordBox.classList.add("keywords-body");
+        // innerKeywordBox.innerHTML = keyword
 
-        this.dataContainer.appendChild(keywordBox);
-        keywordBox.appendChild(innerKeywordBox);
+        // this.dataContainer.appendChild(keywordBox);
+        // keywordBox.appendChild(innerKeywordBox);
     }
 
     renderNewQuestion() {
@@ -216,5 +216,16 @@ export class View {
         this.dataContainer.appendChild(outer);
         outer.appendChild(question);
         outer.appendChild(answer);
+    }
+
+    renderHighlightKeywords(keywords) {
+
+        let genSumItems = document.getElementsByClassName('gen-sum-body');
+        // console.log(genSumItems);
+
+        for (let i = 0; i < genSumItems.length; i++) {
+            // console.log(genSumItems[i].innerText);
+            genSumItems[i].innerHTML = this.wrapKeywordsInSentence(genSumItems[i].innerHTML, keywords)
+        }
     }
 }

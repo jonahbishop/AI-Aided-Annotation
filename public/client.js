@@ -125,6 +125,16 @@ let nextHandler = function() {
     element.scrollIntoView()
 }
 
+let highlightKeywords = function() {
+
+    view.renderHighlightKeywords(query_slimSelect2.selected())
+}
+
+var query_slimSelect2 = new SlimSelect({
+    select: '#query2',
+    hideSelectedOption: true,
+});
+
 let newQuestionHandler = function() {
 
     console.log("New Question Pressed")
@@ -154,10 +164,11 @@ let exportHandler = function() {
     }
 
     // get the keywords
-    let keywords = document.getElementsByClassName("keywords-body")
-    let keywordsText = "";
+    let keywords = query_slimSelect2.selected()
+    console.log(keywords)
+    let keywordsText = [];
     for (const item of keywords) {
-        keywordsText += item.innerText;
+        keywordsText.push(item);
     }
 
     // get the questions and answers
@@ -189,8 +200,31 @@ let handleSimResults = function(res) {
 
     //console.log(res.similar_sentences)
     //console.log(res.keywords)
+    // Set up the keyword/query box
+    let keywords_data = [];
+    let keywords_len = res.keywords.length;
+    let idx = 0;
+    for (let s of res.keywords) {
+        idx = idx + 1;
+        let curr_obj = {};
+        let bl = "100";
+        let gr = ((keywords_len - idx) * 255 / keywords_len).toString();
+        let rd = ((idx) * 255 / keywords_len).toString();
+        console.log(s);
+        curr_obj.text = `${s[0]} (${s[1]})`;
+        curr_obj.innerHTML = "<div>" + s[0] + "</div>" + '<div style="color:rgb(' + rd + ' ,' + gr + ' ,' + bl + ' );">(' + s[1] + ')</div>';
+        curr_obj.value = s[0];
+        keywords_data.push(curr_obj);
+    }
+    query_slimSelect2.setData(keywords_data);
+
+    // select the top 5 keywords to start
+    for (let s of res.keywords.slice(0, 5)) {
+        query_slimSelect2.setSelected(s[0]);
+    }
 
     view.renderGeneratedSummary(summarySentences, rawSentences, res.similar_sentences, res.keywords.slice(0, 5));
+    query_slimSelect2.onChange = highlightKeywords;
 }
 
 
@@ -226,7 +260,7 @@ function handleRerankResult(res) {
 
     // console.log("Candidates before rendering: ", candidateSentences);
 
-    view.renderCandidates(candidateSentences, rawSentences, query_slimSelect.selected());
+    view.renderCandidates(candidateSentences, rawSentences, query_slimSelect1.selected());
 }
 
 // Ping the backend to get a new ranking.
@@ -237,7 +271,7 @@ function initiateRerank() {
         return;
     }
     console.log("reranking");
-    rank(sessionID, query_slimSelect.selected(), summarySentences, handleRerankResult);
+    rank(sessionID, query_slimSelect1.selected(), summarySentences, handleRerankResult);
 }
 
 function onKeywordsChange() {
@@ -252,12 +286,12 @@ function onKeywordsChange() {
 // Upload function
 /////////////////////////////////
 
-var query_slimSelect = new SlimSelect({
-    select: '#query',
+var query_slimSelect1 = new SlimSelect({
+    select: '#query1',
     hideSelectedOption: true,
 });
 
-window.sselect = query_slimSelect; // for debugging :)
+// window.sselect = query_slimSelect1; // for debugging :)
 
 let uploadClickHandler = function() {
     let rawchap = document.getElementById("rawdoctextarea").value;
@@ -293,11 +327,11 @@ let uploadClickHandler = function() {
             keywords_data.push(curr_obj);
         }
         // console.log(keywords_data);
-        query_slimSelect.setData(keywords_data);
+        query_slimSelect1.setData(keywords_data);
 
         // select the top 5 keywords to start
         for (let s of keywords.slice(0, 5)) {
-            query_slimSelect.setSelected(s[0]);
+            query_slimSelect1.setSelected(s[0]);
         }
 
         // display the raw document
@@ -364,7 +398,7 @@ window.onload = function() {
     document.getElementById("ranking-view").ondragover = (ev => ev.preventDefault());
     document.getElementById("ranking-view").ondrop = onDropInCandidatesSection;
 
-    query_slimSelect.onChange = onKeywordsChange;
+    query_slimSelect1.onChange = onKeywordsChange;
 };
 
 /*
