@@ -178,20 +178,6 @@ export class View {
             outer.appendChild(inner);
             inner.innerHTML = textPlusSum;
         }
-
-        // add the keyword box for the annotated data column
-        // TODO: Get the keywords from the sentences
-        // let keywordBox = document.createElement("div");
-        // keywordBox.classList.add("card");
-        // keywordBox.classList.add("data-card");
-
-        // let innerKeywordBox = document.createElement("div");
-        // innerKeywordBox.classList.add("card-body");
-        // innerKeywordBox.classList.add("keywords-body");
-        // innerKeywordBox.innerHTML = keyword
-
-        // this.dataContainer.appendChild(keywordBox);
-        // keywordBox.appendChild(innerKeywordBox);
     }
 
     renderNewQuestion() {
