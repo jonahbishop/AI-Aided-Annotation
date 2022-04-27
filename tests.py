@@ -89,8 +89,8 @@ def check_chapter(sessionID, chap_num, chap_data):
   
 
 def test_mongo():
-  db.hard_reset()
-  db.setup_mongo(True)
+  # db.hard_reset()
+  # db.setup_mongo(True)
   sessionID = db.session_init()
   chap0 = make_chap_from_text("The quick brown fox jumps over the lazy dog!")
   chap1 = make_chap_from_text("lorem ipsum est nova puella canus, optime!")
