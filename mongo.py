@@ -37,11 +37,10 @@ _client = pymongo.MongoClient()
 _db = _client.AAA #AI-Aided-Annotation
 
 """I got paranoid about limited storage resources taking down our app so 
-I gave everything a TTL. Most likely, if this project is extended, such a
-short TTL is undesirable. You're gonna want to just get enough storage."""
-SESSION_TTL=1800
-CHAP_TTL=1800
-TEXT_TTL=3600
+I gave everything a TTL. Most likely, if this project is extended, a TTL
+is undesirable. You're gonna want to just get enough storage."""
+SESSION_TTL=3600*24 # 1 Day to live
+TEXT_TTL=3600*24*3 #3 Days to live
 
 _last_modified = lambda mapping={}: {"lastAccessDate" : datetime.now(), **mapping}
 
@@ -50,15 +49,26 @@ _touch_update = {"$currentDate": {"lastAccessDate": True}}
 def _touch(collection, id):
   collection.find_one_and_update({"_id" : id}, _touch_update)
 _touch_session = lambda s_id : _touch(_db.sessions, s_id)
-_touch_chapter = lambda c_id : _touch(_db.chapters, c_id)
 _touch_text = lambda t_id : _touch(_db.texts, t_id)
+_touch_chapter_text = lambda s_id, c_num : _touch_text(_db.sessions.find_one({"_id": s_id})["chapters"][c_num]["full_text"])
 
+def _text_insert(text):
+  text_found = _db.texts.find_one({"full_text":text})
+  if text_found is not None:
+    _touch_text(text_found["_id"])
+    return text_found["_id"]
+  else:
+    return _db.texts.insert_one(_last_modified({"full_text": text})).inserted_id
 
 def session_init():
   """Creates a session document for you and returns a str ID to access it later
   return: A session_id for use in later functions"""
   return str(_db.sessions.insert_one(_last_modified({"chapters": []})).inserted_id)
 
+
+def session_num_chapters(session_id):
+  return len(_db.sessions.find_one({"_id":ObjectId(session_id)})["chapters"])
+  
 
 def session_add_chapter(session_id, chap_data):
   """Adds the data in chap_data to the chapters collection. Adds a reference to that chapter 
@@ -74,40 +84,25 @@ def session_add_chapter(session_id, chap_data):
   *https://pymongo.readthedocs.io/en/stable/api/bson/index.html#bytes
   """
   session_oid = ObjectId(session_id)
-  chap_oid = _chap_insert(chap_data)
-  print(f"s_id {session_id}\nchap_oid: {chap_oid}")
-  val = _db.sessions.find_one_and_update({"_id" : session_oid}, {"$push": {"chapters": chap_oid}, **_touch_update})
+  assert "full_text" in chap_data
+  text_oid = _text_insert(chap_data["full_text"])
+  embedded_chapter = {**chap_data, "full_text" : text_oid}
+  print(f"s_id {session_id}\ntext_oid: {text_oid}")
+  val = _db.sessions.find_one_and_update({"_id" : session_oid}, {"$push": {"chapters": embedded_chapter}, **_touch_update})
   assert(val is not None)
 
-def session_num_chapters(session_id):
-  return len(_db.sessions.find_one({"_id":ObjectId(session_id)})["chapters"])
-  
     
 def session_set_chapter(session_id, chap_num, chap_data):
   """Overwrites a session's chapter with the new chapter in chap_data"""
-  chap_oid = _chap_insert(chap_data)
+  assert(chap_num < session_num_chapters(session_id))
   session_oid = ObjectId(session_id)
-  l = len(_db.sessions.find_one({"_id" : session_oid})["chapters"])
-  if chap_num == l:
-    print(f"You can't use session_set_chap to set chapter #{chap_num} when there are only {l} chapters. Try adding")
-  elif chap_num > l:
-    print(f"You can't use session_set_chap to set chapter #{chap_num} when there are only {l} chapters")
-  # Instead of the **touch_update, would be more readable as touch_session call followed by just the set
-  # But I'm paranoid about database accesses being possibly expensive at-scale. 
-  assert(_db.sessions.find_one_and_update({"_id" : session_oid}, {"$set" : {f"chapters.{chap_num}": chap_oid}, **_touch_update}) is not None)
-  
-def _text_insert(text):
-  text_found = _db.texts.find_one({"full_text":text})
-  if text_found is not None:
-    _touch_text(text_found["_id"])
-    return text_found["_id"]
+  if "full_text" in chap_data:
+    text_oid = _text_insert(chap_data["full_text"])
+    update = {**chap_data, "full_text":text_oid}
   else:
-    return _db.texts.insert_one(_last_modified({"full_text": text})).inserted_id
- 
-
-def _chap_insert(chapter):
-  assert("full_text" in chapter)
-  return _db.chapters.insert_one(_last_modified({**chapter,  "full_text":_text_insert(chapter["full_text"])})).inserted_id
+    update = chap_data
+    _touch_chapter_text(session_oid, chap_num)
+  assert(_db.sessions.find_one_and_update({"_id" : session_oid}, {"$set" : {f"chapters.{chap_num}": update}, **_touch_update}) is not None)
   
 
 def session_put(session_id, field, val):
@@ -127,14 +122,14 @@ def chap_put(session_id, chap_num, field, val):
   assert(field != "lastAccessDate")
   assert(chap_num < session_num_chapters(session_id))
   session_oid = ObjectId(session_id)
-  chap_oid = _db.sessions.find_one_and_update({"_id": session_oid}, _touch_update)["chapters"][chap_num]
-  assert(_db.chapters.find_one_and_update({"_id": chap_oid}, {"$set": {field:val}, **_touch_update}) is not None)
+  result = _db.sessions.update_one({"_id": session_oid}, {"$set": {f"chapters.{chap_num}.{field}" :val}, **_touch_update})
+  assert(result is not None)
 
 def chap_get(session_id, chap_num, field):
   assert(field != "lastAccessDate")
+  assert(chap_num < session_num_chapters(session_id))
   session_oid = ObjectId(session_id)
-  chap_oid = _db.sessions.find_one_and_update({"_id": session_oid}, _touch_update)["chapters"][chap_num]
-  chapter = _db.chapters.find_one_and_update({"_id": chap_oid}, _touch_update)
+  chapter = _db.sessions.find_one_and_update({"_id": session_oid}, _touch_update)["chapters"][chap_num]
   assert(field in chapter)
   value = chapter[field]
   if field == "full_text":
@@ -144,18 +139,13 @@ def chap_get(session_id, chap_num, field):
 def _reset_indices():
   _db.texts.drop_indexes()
   _db.sessions.drop_indexes()
-  _db.chapters.drop_indexes()
-
-def setup_mongo(reindex = False, session_ttl=SESSION_TTL, chap_ttl=CHAP_TTL, text_ttl=TEXT_TTL):
+  
+def setup_mongo(reindex = False, session_ttl=SESSION_TTL, text_ttl=TEXT_TTL):
   if reindex:
     _reset_indices()
   index_names = lambda coll : map(lambda s: s["name"], coll.list_indexes())
   if "sessionReaper" not in index_names(_db.sessions):
     _db.sessions.create_index("lastAccessDate", name="sessionReaper", sparse=True, expireAfterSeconds=session_ttl)
-  if "chapReaper" not in index_names(_db.chapters):
-    # This sort order should enable efficient deletion by oldness if eventually want to get rid of the TTL 
-    # and instead delete when drive fills up
-    _db.chapters.create_index([("lastAccessDate", pymongo.ASCENDING)], name="chapReaper", sparse=True, expireAfterSeconds=chap_ttl)
   if "textReaper" not in index_names(_db.texts):
     _db.texts.create_index([("lastAccessDate", pymongo.ASCENDING)], name="textReaper", sparse=True, expireAfterSeconds=text_ttl)
     _db.texts.create_index("full_text", unique=True, sparse=True)
