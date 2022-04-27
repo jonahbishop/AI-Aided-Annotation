@@ -2,75 +2,80 @@
 <html>
 
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>AI Aided Annotation</title>
-    <link rel="stylesheet" href="../public/style.css">
+    <link rel="stylesheet" href="../public/style.css" />
 </head>
 
 <body>
     <h4>AI Aided Annotation</h4>
-    <button type="button" onclick="location.href = '/home';" style="color:#2980B9;"><b>Get Started</b></button>
-    <h2>
-        Satvik Chekuri, Jonah Bishop, Isaac David, and Ishaan Lubana
-    </h2>
+    <button type="button" onclick="location.href = '/home';" style="color: #2980b9">
+      <b>Get Started</b>
+    </button>
+    <h2>Satvik Chekuri, Jonah Bishop, Isaac David, and Ishaan Lubana</h2>
     &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
-    <h2>
-        Video Demo
-    </h2>
-    <! --- just left it here to leave a place for later video --->
+    <h2>Video Demo</h2>
     <iframe width="560" height="315" src="https://www.youtube.com/embed/C5N5sKn4a2E" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-    <h2>
-        MMR Aided Annotation
-    </h2>
+    <h2>Current Annotation Process</h2>
     <ul>
-        Human annotation of long documents is a very important task in training and evaluation in NLP. The process starts with the human annotators reading over the document in its entirety. Next, the annotator must summarize the document before annotating based
-        on the summarization. In our client’s case, the chosen long documents are electronic theses and dissertations (ETDs) which are often 100-150 pages minimum thereby making it a time consuming and expensive process to annotate. More specifically,
-        the ETDs are annotated by chapter as content can vary significantly in chapter by chapter basis. These annotations generated will be used to create a knowledge base to help evaluate downstream tasks such as summarization, topic modeling, and question
-        answering.
+        Human annotation of long documents is a very important task in training and evaluation in NLP. The process generally starts with the human annotators reading over the document in its entirety. Once the annotator feels they have a sufficient grasp on the
+        document, they can begin to annotate it. Specifically, annotators will look for questions that can be answered then write down the question and answer. In our client’s case, the chosen long documents are electronic theses and dissertations (ETDs)
+        which are often 100-150 pages minimum thereby making it a time consuming and expensive process to annotate. The ETDs are annotated on a chapter by chapter basis as content can vary significantly in each chapter. The annotations generated are then
+        used to help evaluate downstream tasks such as summarization, topic modeling, and question answering.
     </ul>
-    <h2>
-        Workflow
-    </h2>
+    <h2>AI Aided Annotation Process</h2>
     <ul>
-        &nbsp&nbsp The below figure depicts the workflow of our explorable MMR system. We can observe how the two actors (i.e., Human and AI) part of this workflow complement each other in summarizing text.
+        This website will aid the annotators in the creation of a Knowledge Base that is rich with topics/keywords and Question-Answers for each chapter in ETDs. The core of the system revolves around an algorithm known as the Maximal Marginal Relevance (MMR).
+        By utilizing the MMR algorithm consisting of a changeable lambda value, keywords, and a couple of other elements, we can identify sentences based on their similarity or diversity relative to a collection of sentences. This algorithm would greatly
+        enhance the annotation process in ETDs by automating the process of identifying the most relevant sentences. Thus, annotators do not have to sift through the ETDs one sentence at a time, instead making a comprehensive summary as fast the MMR algorithm
+        can work. As a result, annotators can save many hours per ETD, resulting in more human generated annotations in a shorter amount of time.
     </ul>
-    <img src="https://cdn.glitch.me/af46e606-1885-4918-bf6f-946722a02e34%2Fworkflow.PNG?v=1638739141493" alt="workflow" width="60%">
-    <h2>
-        Maximal Marginal Relevance (MMR) Explained
-    </h2>
-    <img src="https://cdn.glitch.me/bdcc816b-2d5c-441a-8161-a80be1dc6a74%2F2.PNG?v=1638732365422" alt="equition" width="60%">
-    <img src="https://cdn.glitch.me/bdcc816b-2d5c-441a-8161-a80be1dc6a74%2FScreen%20Shot%202021-12-02%20at%206.18.48%20PM.png?v=1638487136072" alt="explanation" width="60%">
+    <h2>Workflow</h2>
     <ul>
-        <li>Assume that we are given a database of 5 documents d<sub>i</sub> and a query q, and we calculated, given a symmetrical similarity measure, the similarity values as below. Further assume that λ is given by the user to be 0.5:</li>
+        &nbsp&nbsp The below figure depicts the workflow of our MMR system. We can observe how the two actors (i.e., Human and AI) part of this workflow complement each other in summarizing text.
     </ul>
-    <img src="https://cdn.glitch.me/bdcc816b-2d5c-441a-8161-a80be1dc6a74%2FScreen%20Shot%202021-12-02%20at%206.57.42%20PM.png?v=1638489469742" alt="valueMat" width="30%">
+    <img src="https://cdn.glitch.me/af46e606-1885-4918-bf6f-946722a02e34%2Fworkflow.PNG?v=1638739141493" alt="workflow" width="60%" />
+    <h2>Maximal Marginal Relevance (MMR) Explained</h2>
+    <img src="https://cdn.glitch.me/bdcc816b-2d5c-441a-8161-a80be1dc6a74%2F2.PNG?v=1638732365422" alt="equition" width="30%" />
+    <img src="https://cdn.glitch.me/bdcc816b-2d5c-441a-8161-a80be1dc6a74%2FScreen%20Shot%202021-12-02%20at%206.18.48%20PM.png?v=1638487136072" alt="explanation" width="30%" />
     <ul>
-        <li>Initially our result set S is empty. Therefore the second half of the equation, which is the max pairwise similarity within S, will be zero. For the first iteration, MMR equation reduces to:
-            <br> &nbsp&nbsp&nbsp&nbsp MMR = arg max (sim (d<sub>i</sub>, q))
-            <br> d<sub>1</sub> has the maximum similarity with q, therefore we pick it and add it to S. Now, S = {d<sub>1</sub>}.</li>
-        <li>Since S = {d<sub>1</sub>}, finding the maximum distance to an element in S to a given d<sub>i</sub> is simply sim(d<sub>1</sub>,d<sub>i</sub>).
-            <br> For d<sub>2</sub>:
-            <br> &nbsp&nbsp&nbsp&nbsp sim(d<sub>1</sub>, d<sub>2</sub>) = 0.11
-            <br> &nbsp&nbsp&nbsp&nbsp sim (d<sub>2</sub>, q) = 0.90
-            <br> &nbsp&nbsp&nbsp&nbsp Then MMR = 0.90 – (1-λ)0.11 = 0.4225
-            <br> Similarly MMR values for d<sub>3</sub>, d<sub>4</sub>, d<sub>5</sub> are 0.135, -0.35 and 0.19 respectively. Since d<sub>2</sub> has the maximum MMR, we add it to S. Now S = {d<sub>1</sub>, d<sub>2</sub>}.
+        <li>
+            Assume that we are given a database of 5 documents d<sub>i</sub> and a query q, and we calculated, given a symmetrical similarity measure, the similarity values as below. Further assume that λ is given by the user to be 0.5:
         </li>
-        <li>This time S = {d<sub>1</sub>, d<sub>2</sub>}. We should find max of sim (d<sub>i</sub>, d<sub>1</sub>) and sim (d<sub>i</sub>, d<sub>2</sub>) for the second part of the equation.
-            <br> For d<sub>3</sub>:
-            <br> &nbsp&nbsp&nbsp&nbsp max{sim (d<sub>1</sub>, d<sub>3</sub>), sim (d<sub>2</sub>, d<sub>3</sub>)} = max {0.23, 0.29} = 0.29
-            <br> &nbsp&nbsp&nbsp&nbsp sim (d<sub>3</sub>, q) = 0.50
-            <br> &nbsp&nbsp&nbsp&nbsp Then MMR = 0.5*0.5 - 0.5*0.29 = -0.0725
-            <br> Similarly MMR values for d<sub>4</sub> and d<sub>5</sub> are -0.35 and 0.06 respectively. Since d<sub>2</sub> has the maximum MMR, we add it to S. Now S = {d<sub>1</sub>, d<sub>2</sub>}.
-            <br> d<sub>3</sub> has the maximum MMR, therefor S = {d<sub>1</sub>, d<sub>2</sub>, d<sub>3</sub>}.
-        </li>
-        <li>If we didn't have diversity at all (λ = 1), then our S would have been {d<sub>1</sub>, d<sub>2</sub>, d<sub>5</sub>}.</li>
     </ul>
-    <img src="https://cdn.glitch.me/af46e606-1885-4918-bf6f-946722a02e34%2Fezgif.com-gif-maker.gif?v=1638564354147" alt="rankgif" width="60%">
+    <img src="https://cdn.glitch.me/bdcc816b-2d5c-441a-8161-a80be1dc6a74%2FScreen%20Shot%202021-12-02%20at%206.57.42%20PM.png?v=1638489469742" alt="valueMat" width="20%" />
+    <ul>
+        <li>
+            Initially our result set S is empty. Therefore the second half of the equation, which is the max pairwise similarity within S, will be zero. For the first iteration, MMR equation reduces to: <br /> &nbsp&nbsp&nbsp&nbsp MMR = arg max (sim (d<sub>i</sub>,
+            q)) <br /> d
+            <sub>1</sub> has the maximum similarity with q, therefore we pick it and add it to S. Now, S = {d<sub>1</sub>}.
+        </li>
+        <li>
+            Since S = {d<sub>1</sub>}, finding the maximum distance to an element in S to a given d<sub>i</sub> is simply sim(d<sub>1</sub>,d<sub>i</sub>).
+            <br /> For d<sub>2</sub>: <br /> &nbsp&nbsp&nbsp&nbsp sim(d<sub>1</sub>, d<sub>2</sub>) = 0.11 <br /> &nbsp&nbsp&nbsp&nbsp sim (d<sub>2</sub>, q) = 0.90 <br /> &nbsp&nbsp&nbsp&nbsp Then MMR = 0.90 – (1-λ)0.11 = 0.4225 <br /> Similarly MMR
+            values for d<sub>3</sub>, d<sub>4</sub>, d<sub>5</sub> are 0.135, -0.35 and 0.19 respectively. Since d<sub>2</sub> has the maximum MMR, we add it to S. Now S = {d<sub>1</sub>, d<sub>2</sub>}.
+        </li>
+        <li>
+            This time S = {d<sub>1</sub>, d<sub>2</sub>}. We should find max of sim (d
+            <sub>i</sub>, d<sub>1</sub>) and sim (d<sub>i</sub>, d<sub>2</sub>) for the second part of the equation. <br /> For d<sub>3</sub>: <br /> &nbsp&nbsp&nbsp&nbsp max{sim (d<sub>1</sub>, d<sub>3</sub>), sim (d
+            <sub>2</sub>, d<sub>3</sub>)} = max {0.23, 0.29} = 0.29 <br /> &nbsp&nbsp&nbsp&nbsp sim (d<sub>3</sub>, q) = 0.50 <br /> &nbsp&nbsp&nbsp&nbsp Then MMR = 0.5*0.5 - 0.5*0.29 = -0.0725 <br /> Similarly MMR values for d<sub>4</sub> and d<sub>5</sub>            are -0.35 and 0.06 respectively. Since d<sub>2</sub> has the maximum MMR, we add it to S. Now S = {d<sub>1</sub>, d<sub>2</sub>}. <br /> d
+            <sub>3</sub> has the maximum MMR, therefor S = {d<sub>1</sub>, d
+            <sub>2</sub>, d<sub>3</sub>}.
+        </li>
+        <li>
+            If we didn't have diversity at all (λ = 1), then our S would have been {d
+            <sub>1</sub>, d<sub>2</sub>, d<sub>5</sub>}.
+        </li>
+    </ul>
     <h2>Now perform MMR assisted annotation of data!</h2>
-    <button type="button" onclick="location.href = '/home';" style="color:#2980B9;"><b>Get Started!</b></button>
+    <button type="button" onclick="location.href = '/home';" style="color: #2980b9">
+      <b>Get Started!</b>
+    </button>
 
-    <p style="text-align:right;"><b>Contact:</b> {satvikchekuri, jonahbishop, isaacd01, ishaan}@vt.edu</p>
+    <p style="text-align: right">
+        <b>Contact:</b> {satvikchekuri, jonahbishop, isaacd01, ishaan}@vt.edu
+    </p>
 </body>
 
 </html>
