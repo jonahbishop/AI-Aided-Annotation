@@ -34,7 +34,7 @@ def sanitize(sent):
 def tokenize_sentences(document):
   """
   Breaks up document by sentence. Document should be a single string. Can be unsanitized.
-  Returns santized broken up sentences
+  Returns sanitized broken up sentences
   """
   return nltk.tokenize.sent_tokenize(sanitize(document))
 
@@ -50,7 +50,7 @@ def summary_generator(sessionID, input_sentences, input_query, bsent):
   # queryWords = []
   queryWords = input_query
 
-  sentences = sentences + processFile(sessionID, input_sentences)
+  sentences = sentences + process_file(sessionID, input_sentences)
   # lines = lines + returnLines(input_file_path)
   # linestring = " "
   # for line in lines:
@@ -106,7 +106,7 @@ def rakeQuery(lines):
 # Parameters	: file_name, name of the file in the document cluster
 # Return 		: list of sentence object
 #---------------------------------------------------------------------------------
-def processFile(sessionID, input_sentences):
+def process_file(sessionID, input_sentences):
 
   # read file from provided folder path
   # f = open(file_name,'r')

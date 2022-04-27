@@ -4,7 +4,7 @@ export function uploadChapter(doc, cb, errorCb) {
     xhr.setRequestHeader('Content-Type', 'application/json');
     cb = cb || function(res) { console.log("Result: ", res); };
     errorCb = errorCb || function(res) { console.log("Error: ", res); };
-
+    
     xhr.onreadystatechange = function() {
         if (xhr.readyState !== 4) return;
 
@@ -18,7 +18,7 @@ export function uploadChapter(doc, cb, errorCb) {
     };
 
     let payload = JSON.stringify({
-        rawdocument: doc,
+        full_text: doc,
     });
 
     // console.log("Sending the following to the /upload endpoint: ", payload);

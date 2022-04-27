@@ -1,16 +1,20 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+
+#TODO: Split into Http-facing server and core methods files
 import os
 import string
 
-from flask import Flask, request, render_template, jsonify, session, url_for, redirect, send_file
-from flask.json import dump
+from flask import Flask, request, render_template, jsonify, session, url_for, redirect, send_file, session
+from flask.json import dumps
+# from flask.ext.mongo_sessions import Mon
 import time
 import mmr
 import secrets
 import pymongo
 import bcrypt
 import random
+import mongo as db
 
 # Support for gomix's 'front-end' and 'back-end' UI. 
 app = Flask(__name__, static_folder='public', template_folder='views')
@@ -19,25 +23,14 @@ app.secret = os.environ.get('SECRET')
 secret = secrets.token_urlsafe(32)
 app.secret_key = secret
 
-
-session_to_file_handle = {}
-
-#connect to your Mongo DB database
-client = pymongo.MongoClient()
-
-#get the database name
-db = client.get_database('total_records')
-#get the particular collection that contains the data
-records = db.register
-
 #Use json_request(s) instead of request.json[s]. If you really need request.json, use json_request().
-
 json_request = lambda s="" : request.json[s] if s else request.json
+
 
 # SESSIONS maps a unique ID to all the saved information for a document,
 # i.e. the parsed sentences, and whatever else we might need and don't
 # want to recalculate.
-SESSIONS = {}
+# SESSIONS = {}
 # Here's an example of what SESSIONS might look like:
 '''   
 SESSIONS = {
@@ -88,7 +81,7 @@ def apitest():
   """Displays a page to test the API"""
   return render_template('api_test.html')
 
-@app.route('/upload', methods=['POST'])
+@app.post('/upload')
 def upload():
   """
   Start a new session with a new document.
@@ -118,40 +111,42 @@ def upload():
   # !!!!!!
   # This is the input: it's just a string that represents the document
   # !!!!!!
-  input_data = json_request('rawdocument')
-  sessionID = int(time.time())
+  if 'full_text' not in json_request():
+    print("malformed '/upload' request!")
+    return jsonify({})
+  sessionID = db.session_init()
+  input_data = json_request('full_text')
   sentences = mmr.tokenize_sentences(input_data)
   keyw_r = mmr.keyword_generator(sentences)
   # print('keywords: ', keyw_r['word'], keyw_r['score'])
-  bad_sentences =[(sentences[i], i) for i in range(0, len(sentences))]#This seems like a bad way of doing this. Please change it, future Isaac
-  # Output fields can go in "res"
-  res = {
-    "raw_document": input_data,
-    "session_id": sessionID,
-    "sentences": bad_sentences,
-    "keywords": keyw_r,#list(keyw_r.apply(lambda x: (x["word"],x["score"]), axis = 1)), # done - maybe only limit to the top n keywords
+  bad_sentences =[(sentences[i], i) for i in range(0, len(sentences))] #This seems like a bad way of doing this. Please change it, future me
+  chap_data = {
+    "full_text": input_data,
+    "sentences": sentences,
+    "keywords": keyw_r
   }
+  res = {**chap_data, "session_id": sessionID} 
+  res["sentences"] = bad_sentences
+  #consider saving IDF?
+  #save the processFile results?
+  
+  db.session_add_chapter(sessionID, chap_data)
+  
+  #Full chapter capabilities would send back {**chap_data, "session_id"}
+  #I send this back for compatibility with single-chapter front-end
+  # chap_data["raw_document"] = chap_data["full_text"]
+  # del chap_data["full_text"]
+  
 
-  if 'rawdocument' not in json_request():
-    print("malformed '/upload' request!")
-    return jsonify({})
-
-
-  SESSIONS[sessionID] = {
-    "raw_document": input_data,
-    "sentences": bad_sentences,
-    "keywords": keyw_r,
-    #consider saving IDF?
-    #save the processFile results?
-  }
-  print("number of sessions: ", len(SESSIONS))
+  # print("number of sessions: ", len(SESSIONS)) #No longer keeps track of this
   # print('keyword res:', res)
 
-  return jsonify(res) #weird we send the document back and forth. Presumably, the front end already has it.
+  return jsonify(res) #weird we send the whole document back and forth. Presumably, the front end already has it.
 
 
-@app.route("/phase_two", methods=['POST'])
-def phase_two():
+@app.post("/phase_two")
+def phase_two(): #TODO Rename to something more descriptive
+  #TODO: Redo documentation to reflect current state of the function
   """
     This is a wrapper for _testable_phase_two. _testable_phase_two has parameters and return values that are easier to
     test server-side  .
@@ -160,11 +155,12 @@ def phase_two():
         (IDs are the same as in the rank method)
     Return: A jsonified dictionary whose keys are the top_sentence's IDs and whose values are the cloud sentences'.
   """
-  sim_sentences, keywords = _testable_phase_two(int(json_request('session_id')), json_request('top_sentences'), json_request('num_similar_sentences'))
+  sim_sentences, keywords = _testable_phase_two(json_request('session_id'), json_request('top_sentences'), json_request('num_similar_sentences'))
   return jsonify({"similar_sentences": sim_sentences, "keywords" : keywords})
 
 
 def _testable_phase_two(sessionID, top_sentence_IDs, n=mmr.N_SIM_SENTENCES):
+  #TODO: Fix documentation
   """
   :param sessionID: The integer sessionID
   :type sessionID: int
@@ -177,8 +173,8 @@ def _testable_phase_two(sessionID, top_sentence_IDs, n=mmr.N_SIM_SENTENCES):
   :return: A dict mapping the strings of the top_sentences to the cloud strings
   :rtype: dict[str, list[str]]
   """
-  curr_session = SESSIONS[sessionID]
-  all_sent_objs = mmr.processFile(sessionID, [pair[0] for pair in curr_session['sentences']])
+  curr_sentences = db.chap_get(sessionID, 0, "sentences")
+  all_sent_objs = mmr.process_file(sessionID, curr_sentences)
   top_sentences = [all_sent_objs[x] for x in top_sentence_IDs]
   other_sentences = [all_sent_objs[x] for x in range(len(all_sent_objs)) if x not in top_sentence_IDs]
   sim_sentences = mmr.n_sim_sentences(top_sentences, other_sentences, all_sent_objs , n=n)
@@ -224,21 +220,21 @@ def rank():
   res = {}
   summary = []
   sentences = []
-  sessionID = int(json_request('session_id'))
+  sessionID = json_request('session_id')
   keywords = json_request('keywords')
   summaryIDs = json_request('summary')
-  curr_session = SESSIONS[sessionID]
-  for i,j in curr_session["sentences"]:
-    if j in summaryIDs:
-      summary.append(i)
+  curr_sentences = db.chap_get(sessionID, 0, "sentences")
+  for i, s in enumerate(curr_sentences):
+    if i in summaryIDs:
+      summary.append(s)
     else:
-      sentences.append(i)
+      sentences.append(s)
   print('summary', summary, summaryIDs)
   mmr_scores = mmr.summary_generator(sessionID, sentences, keywords, summary)
   for index, out in mmr_scores.iterrows():
-    for se, s_id in curr_session["sentences"]:
-      if out['sent'] == se:
-        mmr_scores.at[index, 'sentID'] = int(s_id)
+    for sent_id, sent in enumerate(curr_sentences):
+      if out['sent'] == sent:
+        mmr_scores.at[index, 'sentID'] = sent_id
   res = mmr_scores.to_json(orient ='index')
   print('pes', res)
   if not all(arg in json_request() for arg in ('session_id', 'keywords', 'summary')):
@@ -255,21 +251,19 @@ def generate_json():
   keywords: [keywordA, ...]
   jeopardy: [jeopardy_questions, ...]
   """
-  sessionID = int(json_request("session_id"))
+  sessionID = json_request("session_id")
   full_sum = json_request("full_summary")
   keywords = json_request("keywords")
   jeop = json_request("jeopardy")
-  if sessionID not in session_to_file_handle:
-    session_to_file_handle[sessionID] = "".join([random.choice(string.ascii_letters + string.digits) for _ in range(20)])
-  handle = session_to_file_handle[sessionID]
+  # if sessionID not in session_to_file_handle:
+  #   session_to_file_handle[sessionID] = "".join([random.choice(string.ascii_letters + string.digits) for _ in range(20)])
+  # handle = session_to_file_handle[sessionID]
   return jsonify({"handle": _generate_json(handle, full_sum, jeop, keywords)})
   # return {"handle": _generate_json(handle, full_sum, jeop, keywords)}
 
 
-def _generate_json(handle, full_sum, jeopardy, keywords):
-  filename = f"./exports/{handle}.json"
-  dump({"Full Summary" : full_sum, "Jeopardy Questions" : jeopardy, "Keywords" : keywords}, open(filename, "w", encoding="utf-8"), ensure_ascii=False)
-  return handle
+def _generate_json(full_sum, jeopardy, keywords):
+  return dumps({"summary" : full_sum, "keywords" : keywords, "questionsAndAnswers" : jeopardy}, ensure_ascii=False)
 
 
 @app.get("/download/<handle>")
@@ -278,4 +272,7 @@ def export(handle):
 
 
 if __name__ == '__main__':
+  print("main")
+  db.hard_reset()
+  db.setup_mongo(True)
   app.run(debug=True)
