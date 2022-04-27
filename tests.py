@@ -115,6 +115,9 @@ def test_mongo():
   db.chap_put(sessionID, 0, "myNewField", "someData")
   assert(db.chap_get(sessionID, 0, "myNewField") == "someData")
 
+  db.session_put(sessionID, "someSessionData", "A new value")
+  assert(db.session_get(sessionID, "someSessionData") == "A new value")
+
   
 
 if __name__ == '__main__':

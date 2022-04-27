@@ -13,6 +13,17 @@ db.session_add_chapter(sessionID, chapData)
 # Later you want to get back the value you had in chapData["sentences"] for the first chapData you added:
 sentence_data = db.chap_get(sessionID, 0, "sentences")
 
+Warning: The chapters collection is designed to reduce storage redundancy by merging identical 
+texts from different users and sessions into a single document.* This is done with the indices 
+initialized in setup_mongo() and with some asserts on the chapter data. This means that anything
+user-specific like different chosen top sentences belongs in session
+users
+sh
+
+*(see MongoDB documentation for database vs. collection vs. document). 
+
+
+
 Is this overengineered? Is this underengineered? I have no idea. Too bad!
 
 https://pymongo.readthedocs.io/en/stable/api/index.html
@@ -28,8 +39,9 @@ _db = _client.AAA #AI-Aided-Annotation
 """I got paranoid about limited storage resources taking down our app so 
 I gave everything a TTL. Most likely, if this project is extended, such a
 short TTL is undesirable. You're gonna want to just get enough storage."""
-SESSION_TTL=300
-CHAP_TTL=3600
+SESSION_TTL=1800
+CHAP_TTL=1800
+TEXT_TTL=3600
 
 _last_modified = lambda mapping={}: {"lastAccessDate" : datetime.now(), **mapping}
 
@@ -39,10 +51,12 @@ def _touch(collection, id):
   collection.find_one_and_update({"_id" : id}, _touch_update)
 _touch_session = lambda s_id : _touch(_db.sessions, s_id)
 _touch_chapter = lambda c_id : _touch(_db.chapters, c_id)
+_touch_text = lambda t_id : _touch(_db.texts, t_id)
 
 
 def session_init():
-  """Creates a session document for you and returns a str ID to access it later"""
+  """Creates a session document for you and returns a str ID to access it later
+  return: A session_id for use in later functions"""
   return str(_db.sessions.insert_one(_last_modified({"chapters": []})).inserted_id)
 
 
@@ -52,7 +66,12 @@ def session_add_chapter(session_id, chap_data):
   chapter is the same as a chapter already in the chapters collection, it will instead add a
   reference to that chapter. Chapters are 0-indexed by insertion to a session. i.e. the first 
   chapter added to a session will be accessed with a 0 in other functions.
-  session_id: 
+  
+  session_id: The str session_id returned by session_init()
+  chap_data: A dictionary whose contents should be BSON-encodable (see link). Must have a "full_text"
+             key and all other contents must be exclusively dependent on full_text. See the warning 
+             in the file header.
+  *https://pymongo.readthedocs.io/en/stable/api/bson/index.html#bytes
   """
   session_oid = ObjectId(session_id)
   chap_oid = _chap_insert(chap_data)
@@ -77,21 +96,26 @@ def session_set_chapter(session_id, chap_num, chap_data):
   # But I'm paranoid about database accesses being possibly expensive at-scale. 
   assert(_db.sessions.find_one_and_update({"_id" : session_oid}, {"$set" : {f"chapters.{chap_num}": chap_oid}, **_touch_update}) is not None)
   
-def _chap_insert(chapter):
-  """The invariant that db.chapters contains unique full_texts means that all data placed in the TODO"""
-  assert("full_text" in chapter)
-  check_chap = _db.chapters.find_one({"full_text" : chapter["full_text"]})
-  if check_chap is not None:
-    _touch_chapter(check_chap["_id"])
-    return check_chap["_id"]
+def _text_insert(text):
+  text_found = _db.texts.find_one({"full_text":text})
+  if text_found is not None:
+    _touch_text(text_found["_id"])
+    return text_found["_id"]
   else:
-    return _db.chapters.insert_one(_last_modified(chapter)).inserted_id
+    return _db.texts.insert_one(_last_modified({"full_text": text})).inserted_id
+ 
+
+def _chap_insert(chapter):
+  assert("full_text" in chapter)
+  return _db.chapters.insert_one(_last_modified({**chapter,  "full_text":_text_insert(chapter["full_text"])})).inserted_id
+  
 
 def session_put(session_id, field, val):
   assert(field not in ("lastAccessDate", "chapters")) #Former's private, latter has specific functions to access
   assert(not field.startswith("chapters"))
   session_oid = ObjectId(session_id)
   return _db.sessions.find_one_and_update({"_id":session_oid}, {"$set" : {field : val}, **_touch_update}) is not None
+
 
 def session_get(session_id, field):
   assert(field not in ("lastAccessDate", "chapters")) #Former's private, latter has specific functions to access
@@ -100,43 +124,44 @@ def session_get(session_id, field):
   return _db.sessions.find_one_and_update({"_id": session_oid}, _touch_update)[field]
 
 def chap_put(session_id, chap_num, field, val):
-  """The invariant that full_text be unique means that all the data in a chapter document
-  must be unambiguously derived from the full_text. The data in a chapter's document should be write-once"""
   assert(field != "lastAccessDate")
+  assert(chap_num < session_num_chapters(session_id))
   session_oid = ObjectId(session_id)
   chap_oid = _db.sessions.find_one_and_update({"_id": session_oid}, _touch_update)["chapters"][chap_num]
-  assert(field not in _db.chapters.find_one({"_id":chap_oid})) #This is the write-once check
-  assert(_db.chapters.find_one_and_update({"_id": chap_oid}, {"$set": {field:val}, **_touch_update}))
+  assert(_db.chapters.find_one_and_update({"_id": chap_oid}, {"$set": {field:val}, **_touch_update}) is not None)
 
 def chap_get(session_id, chap_num, field):
   assert(field != "lastAccessDate")
   session_oid = ObjectId(session_id)
   chap_oid = _db.sessions.find_one_and_update({"_id": session_oid}, _touch_update)["chapters"][chap_num]
-  record = _db.chapters.find_one_and_update({"_id": chap_oid}, _touch_update)
-  assert(record is not None)
-  assert(field in record)
-  value = record[field]
+  chapter = _db.chapters.find_one_and_update({"_id": chap_oid}, _touch_update)
+  assert(field in chapter)
+  value = chapter[field]
+  if field == "full_text":
+    value = _db.texts.find_one_and_update({"_id": value}, _touch_update)[field]
   return value
     
-def setup_mongo(reindex = False, session_ttl=SESSION_TTL, chap_ttl=CHAP_TTL):
-  if reindex:
-    reset_indices()
-  if "sessionReaper" not in _db.sessions.list_indexes():
-    _db.sessions.create_index("lastAccessDate", name="sessionReaper", sparse=True, expireAfterSeconds=session_ttl)
-  if "chapReaper" not in _db.chapters.list_indexes():
-    # This sort order should enable efficient deletion by oldness if eventually want to get rid of the TTL 
-    # and instead delete when drive fills up
-    _db.chapters.create_index([("lastAccessDate", pymongo.ASCENDING)], name="chapReaper", sparse=True, expireAfterSeconds=chap_ttl)
-    # db.chapters.create_index([("full_text", pymongo.HASHED)], sparse=True)
-    _db.chapters.create_index("full_text", unique=True, sparse=True)
-
-def reset_indices():
-  # db.exports.drop_indexes()
+def _reset_indices():
+  _db.texts.drop_indexes()
   _db.sessions.drop_indexes()
   _db.chapters.drop_indexes()
 
+def setup_mongo(reindex = False, session_ttl=SESSION_TTL, chap_ttl=CHAP_TTL, text_ttl=TEXT_TTL):
+  if reindex:
+    _reset_indices()
+  index_names = lambda coll : map(lambda s: s["name"], coll.list_indexes())
+  if "sessionReaper" not in index_names(_db.sessions):
+    _db.sessions.create_index("lastAccessDate", name="sessionReaper", sparse=True, expireAfterSeconds=session_ttl)
+  if "chapReaper" not in index_names(_db.chapters):
+    # This sort order should enable efficient deletion by oldness if eventually want to get rid of the TTL 
+    # and instead delete when drive fills up
+    _db.chapters.create_index([("lastAccessDate", pymongo.ASCENDING)], name="chapReaper", sparse=True, expireAfterSeconds=chap_ttl)
+  if "textReaper" not in index_names(_db.texts):
+    _db.texts.create_index([("lastAccessDate", pymongo.ASCENDING)], name="textReaper", sparse=True, expireAfterSeconds=text_ttl)
+    _db.texts.create_index("full_text", unique=True, sparse=True)
+
 def hard_reset():
-  # db.drop_collection("exports")
+  _db.drop_collection("texts")
   _db.drop_collection("sessions")
   _db.drop_collection("chapters")
 
