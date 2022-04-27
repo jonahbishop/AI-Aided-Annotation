@@ -1,29 +1,619 @@
-export let DEMO_ARTICLE_TEXT = `F.D.A. to Allow ‘Mix and Match’ Approach for Covid Booster Shots.
-The agency may act this week, when it is expected to authorize booster shots for recipients of the Moderna and Johnson & Johnson vaccines.
-The Food and Drug Administration is planning to allow Americans to receive a different Covid-19 vaccine as a booster than the one they initially received, a move that could reduce the appeal of the Johnson & Johnson vaccine and provide flexibility to doctors and other vaccinators.
-The government would not recommend one shot over another, and it might note that using the same vaccine as a booster when possible is preferable, people familiar with the agency’s planning said. But vaccine providers could use their discretion to offer a different brand, a freedom that state health officials have been requesting for weeks.
-The approach was foreshadowed on Friday, when researchers presented the findings of a federally funded “mix and match” study to an expert committee that advises the Food and Drug Administration. The study found that recipients of Johnson & Johnson’s single-dose shot who received a Moderna booster saw their antibody levels rise 76-fold in 15 days, compared with only a fourfold increase after an extra dose of Johnson & Johnson.
-Federal regulators this week are aiming to greatly expand the number of Americans eligible for booster shots. The F.D.A. is expected to authorize boosters of the Moderna and Johnson & Johnson vaccines by Wednesday evening; it could allow the mix-and-match approach by then. The agency last month authorized booster shots of the Pfizer-BioNTech vaccine for at least six months after the second dose.
-An advisory committee of the Centers for Disease Control and Prevention will take up the booster issue on Thursday; the agency will then issue its own recommendations. By the end of the week, tens of millions more Americans could be eligible for extra shots.
-The study presented to the F.D.A.’s advisory panel last week, conducted by the National Institutes of Health, suggested that Johnson & Johnson recipients might benefit most from a booster shot of the Moderna vaccine. A shot of the Pfizer-BioNTech vaccine also raised the antibody levels of Johnson & Johnson recipients more than Johnson & Johnson did, the study found, although not as much as Moderna did. The N.I.H. researchers tested a full dose of Moderna’s vaccine for a booster shot, but regulators are also considering whether to authorize a half dose.
-Experts emphasized last week that the new data was based on small groups of volunteers and short-term findings. Only antibody levels — one measure of the immune response — were calculated as part of the preliminary data, not the levels of immune cells primed to attack the coronavirus, which scientists say are also an important measure of a vaccine’s success.
-The study’s researchers warned against using the findings to conclude that any one combination of vaccines was better. The study “was not powered or designed to compare between groups,” said Dr. Kirsten E. Lyke, a professor at the University of Maryland School of Medicine, who presented the data.
-While the research on mixing and matching doses is somewhat thin, even some scientists who have strongly criticized the Biden administration’s booster policy said that providers should be given a measure of discretion as the campaign ramps up.
-“If you look at the data, it certainly looks like it might be better,” Dr. Paul A. Offit, the director of the Vaccine Education Center at Children’s Hospital of Philadelphia, said of Moderna or Pfizer boosters for Johnson & Johnson recipients. “I think we should move quickly on this, because it’s already happening.”
-At the meeting on Friday of the Food and Drug Administration’s expert panel, of which Dr. Offit is a member, top C.D.C. officials argued that providers needed latitude to offer different vaccines as boosters because patients might have had adverse reactions after their initial shots or presented other new concerns. Providers also might not have access to a vaccine a patient initially received, they said.
-The federal government will cover the cost of a different vaccine as a booster only if the Food and Drug Administration authorizes the approach, officials said.
-“I’d like to reiterate how important it is from a programmatic perspective to have a little bit of flexibility,” Dr. Melinda Wharton, a top vaccine official at the C.D.C., told the F.D.A. panel.
-“From a public health perspective, there’s a clear need in some situations for individuals to receive a different vaccine,” said Dr. Amanda Cohn, another high-ranking C.D.C. official.
-Both Moderna and Pfizer require two initial doses, separated by about a month. Regulators are expected to follow the same approach they took with Pfizer’s vaccine and authorize a booster of Moderna’s vaccine about six months after the second shot. Johnson & Johnson is headed for a booster shot of its vaccine at least two months after the first dose.
-State health officials have been arguing for weeks that recipients of booster shots should not be strictly bound to the vaccine they initially received, for reasons such as supply, patient choice and ease of administration.
-“The No. 1 thing I heard from state health secretaries was the need for permissive language around a mix-and-match approach,” said Dr. Nirav D. Shah, Maine’s top health official and the president of the Association of State and Territorial Health Officials.
-Dr. Clay Marsh, West Virginia’s Covid-19 czar, said the state had a greater supply of Moderna and Pfizer-BioNTech vaccines than of Johnson & Johnson’s, so officials there might prefer to use them for boosters out of convenience. Others said the option of switching vaccines could streamline the administration of boosters.
-“The impetus for states and local health departments was that if they were going to go out to a community site or long-term care facility and start providing boosters, it was a little inefficient to show up somewhere and say, ‘We’re just doing the people who got Pfizer,’” said Dr. Marcus Plescia, the chief medical officer for the Association of State and Territorial Health Officials. “When you have a captive audience, you want to take advantage of that.”
-Yet more options could lead to more confusion about booster shots, some experts have said. The Food and Drug Administration this week is expected to authorize boosters for all Johnson & Johnson recipients 18 and older. But the only Moderna recipients who are expected to become eligible for boosters are those who are at least 65 or otherwise considered at high risk, following the same eligibility requirements for recipients of Pfizer-BioNTech’s vaccine.
-Jeannette Y. Lee, a biostatistician at the University of Arkansas for Medical Sciences and a member of the F.D.A.’s expert committee, warned on Friday that allowing people to switch from their original vaccine type could be “very, very messy in terms of the messaging.”
-It remains unclear what dosage of Moderna’s vaccine might be authorized for use as a booster for recipients of other vaccines. Last week, the advisory committee voted unanimously to recommend that Moderna recipients receive a third shot of that vaccine as a booster, but at only half a dose.
-Dr. Anthony S. Fauci, the government’s top infectious disease expert, publicly suggested on Sunday that the government was headed toward granting greater leeway, at least for Johnson & Johnson recipients. “I believe there’s going to be a degree of flexibility of what a person who got the J.&J. originally can do, either with J.&J. or with the mix-and-match from other products,” he said on “Fox News Sunday.”
-Just over 15 million people have been fully vaccinated with Johnson & Johnson’s vaccine, compared with 69.5 million for Moderna’s and 104.5 million with Pfizer-BioNTech’s.
+export let DEMO_ARTICLE_TEXT = `Chapter 1: Introduction
+
+The term “meme” has become increasingly pervasive in recent years, particularly on the 
+World Wide Web and in trendy cultural outlets such as Wired magazine. Given that I’m a long-
+time Internet user with a proclivity for exploring esoteric topics, it was perhaps only a matter of 
+time before my encounters with this curious word would lead me to explore it in more detail. 
+And as I would later come to recognize, my earlier experiences as an electrical engineering 
+student and computer programmer probably heightened my affinity for the meme concept. As I 
+started to research the topic, I uncovered a diverse body of authors and texts spanning multiple 
+disciplines and decades, and my inquiries quickly led to more questions and answers. My initial 
+quest to uncover the origin and meaning of the term eventually grew into this ambitious thesis: a 
+contemporary history of memetics, or the field dedicated to the study of memes.1 At the center of 
+my account is the argument that memetics has been characterized by an atypical pattern of 
+growth, with the field moving toward greater academic legitimacy only after significant diffusion 
+in the popular realm. As I will demonstrate, the history of memetics upends conventional 
+understandings of discipline formation and the popularization of scientific ideas, making it a 
+novel and informative case study in the realm of science and technology studies. Furthermore, 
+this project more generally underscores how the development of disciplines is thoroughly 
+imbricated in a larger social, cultural, and historical milieu. But before I delve into the specific 
+methods, goals, and implications of this project, it is necessary to develop a brief historical 
+primer as an introduction to both the field of memetics and the controversies that surround it. 
+ 
+Memetics: A Historical Primer 
+
+An obligatory entry point for an introduction to the meme concept is the work of Oxford 
+zoologist Richard Dawkins. In his first book – the popular science tome The Selfish Gene (1976) 
+– Dawkins popularized the argument that evolution should be studied in terms of competition 
+between “selfish genes.” His approach was an important challenge to the theory that evolutionary 
+processes are best understood at the organism or species level, a view long trumpeted by authors 
+such as renowned paleontologist Stephen Jay Gould. Along with a number of other texts, 
+including Edward O. Wilson’s Sociobiology (1975), Dawkins’s book contributed to the nature 
+verses nurture debates that climbed to a fever pitch as the 1970s wore on. As a key element of his 
+larger argument, Dawkins proposed that genes are prototypical “replicators.” In brief, a 
+replicator is any entity able to make identical or nearly identical copies of itself, all while 
+following the tenets of natural selection. In a subsequent book, Dawkins offered this oft-cited 
+definition: “A replicator is anything in the universe of which copies are made” (1982, p. 83).  
+   While the bulk of his 1976 text demonstrated the heuristic power gained by viewing 
+genes as “selfish replicators,” Dawkins professed that gene-centered approaches failed to 
+adequately explain the diversity and complexity of human culture: “[F]or an understanding of the 
+evolution of modern man, we must begin by throwing out the gene as the sole basis of our ideas 
+of evolution” (1976, p. 191). After naming a handful of scholars who had tentatively explored 
+analogies between cultural and genetic evolution – including philosopher Sir Karl Popper, 
+geneticist Luigi Cavalli-Sforza, anthropologist F.T. Cloak, and ethologist J.M. Cullen – Dawkins 
+hypothesized that culture must follow an independent evolutionary process (p. 190). Casting 
+about for a novel, non-genetic replicating entity, he posited the “meme” as a “unit of cultural 
+transmission, or a unit of imitation” (p. 192). Dawkins coined the term as an abbreviation of the 
+Greek “mimeme” or “something imitated.” It also sounded like “gene,” a fitting parallel given 
+the analogous nature of the two entities (p. 192). 2 He added: 
+Examples of memes are tunes, ideas, catch-phrases, clothes fashions, ways of 
+making pots or of building arches. Just as genes propagate themselves in the gene 
+pool by leaping from body to body via sperms or eggs, so memes propagate 
+themselves in the meme pool by leaping from brain to brain via a process which, 
+in the broad sense, can be called imitation (p. 192). 
+Further developing the analogies between genes and memes, Dawkins argued that memes must 
+follow the tenets of natural selection, with the consequence that some are necessarily more 
+successful than others (p. 194). In addition to the examples given above, the author also looked 
+at scientific concepts and religious doctrines to explain how memes evolve and spread. Dawkins 
+also strayed briefly from evolutionary rhetoric by describing memes in epidemiological terms. 
+He referred to the “infective power” of particular memes (p. 193), and offered a striking quote 
+from colleague N. K. Humphrey: “[M]emes should be regarded as living structures, not just 
+metaphorically, but technically. When you plant a fertile meme in my mind you literally 
+parasitize my brain, turning it into a vehicle for the meme’s propagation in just the way that a 
+virus may parasitize the genetic mechanism of a host cell” (p. 192). Offering additional 
+clarification of where these entities called memes reside, Dawkins stated: “The computers in 
+which memes live are human brains” (p. 197). 
+Dawkins’s selfish gene theory proved both controversial and durable, and his 1976 book 
+moved into position as a long running best seller in the popular science genre. But the meme 
+idea, introduced in a scant twelve pages of text, received only scattered attention into the 1980s. 
+Other scholars were developing their own evolutionary approaches to the study of culture during 
+this time period, but they largely avoided Dawkins’s terminology. Of the few authors who did 
+offer early commentary on the meme concept, noteworthy discussions can be found in articles by 
+the eminent philosopher David Hull (1982), astronomer John Ball (1984), scientist and popular 
+science writer Douglas Hofstadter (1983; 1985), and Dawkins himself (1982; 1989). Engineer 
+and research scientist K. Eric Drexler offered an early popular interpretation of memes in his 
+best-selling 1986 book Engines of Creation, and introductions to the topic also appeared in 
+outlets such Whole Earth Review (Henson, 1987b) and The Washington Post (Schrage, 1988). By 
+the mid-1980s, the term “memetics” was first used in reference to the study of memes, and in 
+1990 futurist and science fiction author Glenn Grant identified a “memeticist” as “one who 
+studies memetics” (1990).3 Such monikers foreshadowed the movement of meme theory and its 
+proponents toward both greater popularization and a more coherent identity in the 1990s.  
+One author who contributed significantly to this movement was the philosopher Daniel 
+Dennett, who first discussed memes in a 1990 journal article. Dennett further adopted and 
+adapted the meme concept as an important part of his larger theoretical framework via a pair of 
+popular science texts dedicated to topics such as cognition, consciousness, and evolutionary 
+theory (1991; 1995). In addition to making the ground-breaking argument that “human 
+consciousness is itself a huge complex of memes” (1991, p. 210), Dennett was one of the first 
+authors to evaluate seriously the prospects for a new “science of memetics” (1995, p. 352-360). 
+                                                 
+Looking beyond Dennett’s work, we find that the dissemination of the meme concept to various 
+niche audiences of technologists and futurists was apparent by the mid-1990s, as evidenced by 
+the founding of the Internet newsgroup alt.memetics, the appearance of articles about the topic in 
+Wired magazine, and references to various meme-like entities in a number of science fiction 
+stories. Discussions of meme theory appeared in a diverse assortment of books as well, ranging 
+from the more academic treatments of the topic offered by anthropologist and human biologist 
+William H. Durham (1991) and psychobiologist Henry Plotkin (1993) to the popularized 
+interpretations presented by psychologist Mihaly Csikszentmihalyi (1993) and evolutionary and 
+social theorist Howard Bloom (1995).  
+More recently, the growth of the field has accelerated. In addition to a plethora of 
+contemporary articles, columns, reviews and web pages, at least five texts wholly dedicated to 
+the meme concept have been published since 1996.4 The Journal of Memetics – Evolutionary 
+Models of Information Transmission (JoM-EMIT) started publication as an online, peer-
+reviewed academic journal in 1997, and the first conference on memetics took place in 1999, 
+suggesting that the field was moving toward more substantial academic foundations. In 1997, the 
+term “meme” was officially added to the Oxford English Dictionary, an indication that the 
+concept had to some extent taken root in the realm of popular culture as well (Oxford University 
+Press, 1997). Today the field of memetics enjoys a diverse following. It has an interdisciplinary 
+flavor, with participants hailing primarily from the domains of evolutionary biology, psychology, 
+and various social sciences (Aunger, 1999a). The meme concept has also attracted a variety of 
+popular authors and independent researchers, many with technology backgrounds. Proponents of 
+the idea have developed supplemental terminology, case studies, and mathematical models, and 
+various concepts from memetics have been applied in diverse domains such as marketing, 
+artificial intelligence, and cognitive studies. A handful of prominent meme theorists – including 
+the aforementioned Dennett and the psychologist Susan Blackmore – have challenged traditional 
+notions of consciousness by depicting a de-centered view of the human self, with minds 
+characterized as colonies of memes. Others have pitched memetics as the long-awaited discipline 
+that might unite the natural and social sciences, thereby bridging seemingly disparate fields such 
+as anthropology and biology. And competing approaches to understanding the evolution and 
+transmission of culture – such as Donald T. Campbell’s evolutionary epistemology or various 
+                                                 
+coevolutionary theories developed by sociobiologists – have failed to gain momentum or form 
+the academic and popular niches for which memetics is known.  
+But regardless of the relative success of the field, memetics remains somewhat fractured, 
+immature, and controversial, and widespread recognition of the domain as a legitimate scientific 
+discipline remains a hazy prospect. Critics have portrayed meme theory as riddled with intrinsic 
+defects, making it of little value for those who study the evolution and transmission of culture. 
+They point out that the field lacks the solid empirical grounding necessary for a progressive 
+discipline, going so far as to label the meme concept a “meaningless metaphor” and memetics a 
+“cocktail party science.”5 Others argue that meme theorists have overextended neo-Darwinian 
+theorizing and oversimplified human cognition and culture. Even those who identify themselves 
+as proponents of the field remain divided on many fundamental matters. To further explore both 
+the historical development and contemporary state the field, I turn to a number of key schisms 
+that have long divided meme theorists. 
+ 
+Controversies in Meme Theory 
+
+While a number of controversial issues have shaped the history of meme theory, three in 
+particular prove most relevant to my analysis. The first issue centers on questions about the 
+history of the field, particularly with regard to the origin of the meme concept. In the preceding 
+primer, I advanced a historical narrative that appears frequently in discussions of memetics: the 
+founding of the field can be traced back to Richard Dawkins’s 1976 text, The Selfish Gene. 
+Robert Aunger, an anthropologist who has emerged as a prominent spokesperson for memetics in 
+recent years, offers one version of this perspective:  
+The product of humble birth, the concept of meme was “invented” by the 
+zoologist Richard Dawkins of the University of Oxford (in his 1976 book The 
+Selfish Gene), as a foil to the idea, prevalent among some biologists, that the 
+evolutionary process applies only to genes. … But the idea has long since 
+outgrown its paternity, and one has the impression that Dawkins's main reaction 
+to his progeny, a bit more than two decades after its conception, is to shake his 
+head in bewildered amazement at the plasticity and staying power of the idea he 
+unleashed (Aunger, 1999b, para. 2). 
+Far from a simple attribution of credit, Aunger’s depiction is steeped in both biological rhetoric 
+and paternalistic overtones, with Dawkins painted as the sole originator of the meme concept. 
+Given the context of Aunger’s comment – a book review in which he briefly introduces 
+memetics – readers might quickly conclude that Dawkins is indeed the “father” of the field. 
+Corroboration for this view can be found in the comments of social psychologist and marketing 
+guru Paul Marsden, who writes, “The emerging research project [memetics], and spawn of 
+Richard Dawkins's brain, investigates the spread, structure and selection of memes – which can 
+loosely be defined as infectious units of culture” (Marsden, 2000a). Following in Aunger’s 
+footsteps, Marsden singles out Dawkins as founder of the field. Furthermore, these salutary 
+depictions are two examples among many. As I will explore in subsequent chapters, this 
+“Dawkins origin story” is a recurrent theme in the memetics literature.  
+However, important questions have been raised in recent years regarding Dawkins’s 
+position in the history of the meme theory. Contrary to Marsden’s claim that Dawkins 
+“spawned” a research project, the meme concept was originally described by the Oxford 
+zoologist as speculation (1976, p. 199-200), and for many years it failed to gain significant 
+attention. In fact, proponents of the nascent theory tentatively started to discuss the possibilities 
+for a new “discipline of memetics” only in the mid-1980s. Even Dawkins himself has stated on 
+multiple occasions that, far from attempting to form a new field of inquiry, his ambitions for the 
+meme concept were originally rather modest. To the present, he remains an ironic founder and 
+reluctant spokesperson, never entirely embracing or distancing himself from the field. And while 
+most commentators agree that the term “meme” was coined in The Selfish Gene, the narratives 
+delivered by Aunger and Marsden suggest that the meme concept appeared phoenix-like from 
+the head of Dawkins.  
+Aaron Lynch, a Fermilab engineer turned author and independent researcher, has 
+surfaced as one of the most outspoken critics of Dawkins’s role in the history of the field. He 
+points instead to anthropologist F.T. Cloak as developing the foundations that led to both 
+Dawkins’s meme idea specifically, and the field of memetics more generally: 
+Yet contrary to common belief, evolutionary cultural replicator theory was not 
+invented by Richard Dawkins, but goes back at least to the cultural anthropologist 
+F. T. Cloak, who discussed it in his 1973 paper [Cloak, 1973] …  The idea of 
+Dawkins as originator of evolutionary cultural replicator theory has become so 
+widespread and often communicated (due to Dawkins's popular writing style, 
+ongoing publicity, etc., and Cloak's technical style, obscure modes of publication, 
+and lack of self-promotion) that even people who have read Cloak's early papers 
+and forgotten their publication dates can acquire the idea of crediting the theory's 
+origin to Dawkins (Lynch, 2000a). 
+In another article, Lynch added that “the word [meme] was apparently coined by Dawkins to 
+popularize Cloak's theoretical paradigm” (Lynch, 2001b). These are no minor charges, for they 
+suggest that Dawkins may have borrowed Cloak’s idea, developed catchy terminology to 
+popularize it, and then failed to give credit where due. Even if Lynch’s comments prove only 
+partially accurate, they would warrant a substantial revision of entrenched historical narratives. 
+In order to develop a more compelling and inclusive history of the field, it will be necessary for 
+me to grapple with Lynch’s claims at some length in subsequent chapters. 
+But questions of motivation also loom large, especially given that debates over the 
+origins of the field have become more prominent in recent years. As a case in point, Lynch 
+himself offered numerous attributions of credit to Dawkins before abruptly switching to the 
+steadfast promotion of Cloak’s work in the late 1990s. On the one hand, promoting alternate 
+origins for the field may be prompted by a desire to set the historical record straight, or to give 
+credit to authors whose contributions have been overlooked. But debates over the origins of 
+memetics also point to a tension in the field between early popularization and delayed academic 
+legitimacy. As suggested by the preceding historical primer, the meme concept started to diffuse 
+in a broad, non-scientific audience well in advance of appreciable recognition by academics. In 
+order to place the history of memetics on more scientific and scholarly foundations, Lynch and 
+other authors have turned to the more technical and theoretical work of authors such as Cloak. 
+Quite simply, a popular science tome such as The Selfish Gene is an atypical starting point for 
+what is purported to be a revolutionary new scientific discipline, and invoking alternate origin 
+stories is an important strategy for those who want to raise the apparent legitimacy of the field.  
+Questions about the origins of the field are tied to a second controversial theme, namely 
+definitional debates over the term meme. Dawkins’s original explication of the concept offered 
+readers little more than the assertion that memes are “units of cultural transmission,” and 
+subsequent attempts by Dawkins and other authors to refine and clarify the term resulted in a 
+profusion of competing definitions. One question surfacing frequently in these debates is 
+whether memes should be defined as either cultural instructions that reside in the brain versus the 
+behaviors or material artifacts that result from those instructions. Take the case of a pervasive 
+advertising jingle. When viewed as a meme, does the jingle exist as a pattern of information in 
+the brain, as a pattern of notes and words recorded via some other medium, or perhaps some 
+combination thereof? A closely related matter involves the specification of the unit meme. 
+Capturing another oft-discussed musical example, psychologist and author Susan Blackmore 
+queries, “Is Beethoven’s Fifth Symphony a meme, or is only the first four notes?” (1999, p. 53).  
+From a historical perspective, such questions are central to documenting the development 
+of the field. But far from being purely technical disputes over the vagaries of meme theory, 
+debates over terminology and units frequently have a political subtext. Bruce Edmonds, a 
+philosopher and current editor of the Journal of Memetics, reaches a similar conclusion. He 
+remarks: “[T]he political subtext of these definitional disputes are nothing more than the 
+leadership and membership rights of the tribe of memeticists” (1998a). As suggested by 
+Edmonds’s comment, redefining terminology or narrowly specifying a “unit of memetic 
+analysis” may implicitly include or exclude large numbers of authors and texts, or even entire 
+swaths of the field’s history. Perhaps not surprisingly, many authors have attempted to untangle 
+these issues in recent years, but with only limited success.  
+A third major source of controversy in the field involves a rivalry between evolutionary 
+and epidemiological approaches to the study memes. Aunger aptly depicts these competing 
+perspectives with the labels “meme-as-gene” and “meme-as-germ” (2000, p. 9). The former 
+draws on the terminology and conceptual framework of Darwinian evolution and genetics, with 
+memes viewed as analogous to genes, but operating in the realm of culture. Treating memes as 
+true replicators, theorists speculate on the three key processes – replication, variation, and 
+selection – required for the evolution of memes to take place. Edmonds offers a succinct 
+description of this approach by characterizing memetics as “the application of models with an 
+evolutionary or genetic structure to the domain of (cultural) information transmission” (1998b, 
+Section 2). 
+The “meme-as-germ” perspective, on the other hand, explores the spread of memes via 
+“infection analogies.” These tend toward viral or parasitic models and borrow terminology from 
+immunology, resulting in concepts such as the “epidemiology of ideas” (Sperber, 1990; 1996), 
+“thought contagion” (Lynch, 1996), “viruses of the mind” (Schrage, 1988; Dawkins, 1993a, 
+1993b; Brodie, 1996), and “thought viruses” (Lofland, 1997). Such phrases are often used in 
+reference to particularly nefarious or pervasive memes, with examples ranging from fads and 
+fashions to religious doctrines and cults. A closer look at foundational work in the field reveals 
+that these two analogies are deeply rooted in the history of meme theory. Furthermore, the 
+relatively early popularization of the field can to some extent be explained by the forceful 
+resonance of “meme-as-germ” analogies with popular authors and audiences, while the academic 
+sphere of meme theorizing has generally favored evolutionary analogies. 
+The controversies outlined here paint a more complex picture of the historical 
+development of memetics. Fortunately, my effort to untangle these debates and develop a 
+compelling depiction of the field is necessarily informed by the work of many other authors. I 
+begin with a handful of texts that provide critical analysis of the history and development of 
+memetics. I then turn to a larger body of work to discuss a number of theoretical and 
+methodological insights that are more generally applicable to my project. 
+ 
+Literature Review 
+
+Outsider and Insider Perspectives 
+
+In the general realm of science and technology studies (STS), memetics has largely been 
+ignored. Scholars who might perform critical outside analysis of the field’s development, such as 
+sociologists and historians, have thus far overlooked meme theory. A handful of philosophers, 
+however, have offered discussions of the topic. David Holdcroft and Harry Lewis, for instance, 
+are recent critics of the meme concept. In an article published in Philosophy, their disparagement 
+is leveled rather narrowly at Dennett, and to a lesser extent Dawkins (2000). They fail to mention 
+more recent texts appearing in the Journal of Memetics, and while they do cite Blackmore’s 
+influential The Meme Machine in a footnote, they provide no additional analysis of her book. 
+Their conclusions and challenges are therefore primarily aimed at Dennett’s formulation of 
+memetics rather than the field writ large. More relevant for the current project is the work of two 
+well-known contemporary philosophers. The first, Mary Midgley, has been a stalwart opponent 
+of Dawkins’s work generally and the meme concept specifically since at least the late 1970s 
+(1979; 1983). More recently, Midgley authored an article that was highly critical of memetics, 
+categorizing it as an “ethereal, quasi-scientific system” (1999, p. 85). The eminent philosopher of 
+science David Hull, on the other hand, has been labeled a “sympathetic critic” of the field. While 
+it is difficult to determine just how far his sympathies extend, a recent article by Hull titled 
+“Taking Memetics Seriously: Memetics Will Be What We Make It” (2000) suggests that the 
+author views himself as a member of the memetics community. His first discussion of the topic 
+dates back to 1982, and his involvement in the field is an important but often overlooked 
+historical consideration.   
+Looking beyond the domain of philosophy, three literary scholars have written valuable 
+recent commentaries about memes. English professor Mark Jeffreys provides one the best 
+contemporary introductions and abbreviated histories of the field (2000). He explores many of 
+the key obstacles facing the advancement of meme theory, emphasizing the competing 
+metaphors that have divided the work of theorists. Jesse Cohn, on the other hand, delves into a 
+series of science fiction texts to discuss how “viral imagery and meme theory run parallel with 
+one another” (2001). Focusing specifically at the ways in which viral metaphors foreground 
+power and identity issues for contemporary authors and audiences, Cohn explores various 
+interpretations of memes offered by authors such as Dawkins and Henson. And in her doctoral 
+dissertation, Anne-Marie Thomas offers a thorough analysis of the intersection of memetics, 
+immunology, and technology (2002, Ch. 5). Like Cohn, science fiction texts prove central to her 
+effort, and she adroitly contextualizes viral interpretations of memes in the domain of popular 
+culture generally and among technophiles specifically. I’ll return to the work of these three 
+authors in exploring how “meme-as-germ” analogies have resonated forcefully with popular 
+authors and audiences.  
+While the texts outlined above prove informative for this project, there remains relatively 
+little outside commentary about the history and development of memetics. Hence, I will also 
+draw extensively on first-hand materials for historical details and bibliographic reference. Many 
+authors working in the field have developed informative discussions regarding both the history 
+of meme theory and the controversies and debates that surround it. For instance, Blackmore’s 
+The Meme Machine (1999) presents an insightful overview of the development of and main 
+debates in the field. Similarly, Aunger’s recent books (2000; 2002) provide substantial 
+commentary on the history and contemporary state of meme theory. The Journal of Memetics 
+(JoM-EMIT) is also a focal point of activity and valuable source of recent articles and opinion 
+pieces.  
+However, the accounts presented by “insider” sources may prove problematic. Authors 
+are sometimes inclined to entrench questionable origin stories or advance Whiggish 
+interpretations of the field’s history. Other writers present historical details as background or 
+introductory material, or in tandem with particular theoretical goals, rendering them incomplete 
+or conflicting. Historian Helge Kragh warns that writing the history of an interdisciplinary field 
+requires the frequent crossing of disciplinary boundaries, an undertaking likely to be dodged by 
+those insiders and historians who approach the field in question with a narrow perspective (2002, 
+p. 56). Furthermore, the development of disciplinary histories is often bound up with “political” 
+interests and motivations. A volume edited by historian Loren Graham and sociologists Wolf 
+Lepenies and Peter Weingart, aptly titled Functions and Uses of Disciplinary Histories (1983), 
+brings these issue to the fore. In the Introduction, Lepenies and Weingart note, “One function of 
+such histories is that of legitimating ‘political’ interests often pursed by the authors of such 
+histories themselves” (1983, p. xvii). The authors add: 
+Histories thus serve to legitimate new paradigms and to delegitimate old ones. A 
+different periodization, the mentioning of some, hitherto less known, and the 
+ignoring of others, hitherto highly respected scholars will change the image of a 
+discipline’s history, it will restructure the memory of the past and, by way of 
+socialization, structure the future (Lepenies and Weingart, 1983, p. xvii). 
+Lepenies and Weingart note, finally, that historical accounts are shaped by the individuals or 
+groups that produce them, the audiences to which they are directed, and the uses for which they 
+are written (pp. xix-xx). The diverse historical case studies presented in the rest of their volume – 
+which are drawn from the natural sciences, social sciences, and humanities – both support and 
+extend these major themes outlined. 
+In light of the issues raised by these authors, a large part of this project involves a critical 
+evaluation and synthesis of the histories already developed by proponents of meme theory. In 
+doing so, it will be necessary to seek out the lesser-known theorists and texts that have been 
+ignored or disregarded by contemporary authors. This effort will also require an exploration of 
+the various “non-theoretical,” “external,” and “political” issues that have received relatively little 
+attention in the historical accounts developed by insiders. Aunger is one of the few proponents of 
+the meme concept to even acknowledge that “intellectual agendas having little to do with 
+memetics itself” (2000, p. 21) have likely shaped debates in and around the field, but he avoids 
+an extensive discussion of the topic. Looking at how these agendas have shaped both the field of 
+memetics and historical accounts of the field’s development are central themes in my analysis. 
+As I will discuss in more detail below, discussions about the historical origins of meme theory 
+frequently involve the political motivations of the participants. 
+ 
+Contextualist Historiography 
+
+My emphasis on crafting a more compelling and inclusive historical study of memetics is 
+supported by a bevy of contextualist and constructivist theorists who have convincingly argued 
+that the social, cultural and intellectual milieu in which fields are situated are key considerations 
+that cannot be separated from theoretical content or narrow “internal” processes of disciplinary 
+development. While scholars such as Shapin and Latour pioneered this movement, I am partial to 
+a recent description of contextualist historiography offered by Lenoir. He argues that “science as 
+cultural practice is imbricated in a seamless web with other forms of social, political, even 
+aesthetic practices, and I treat the formation of discipline and scientific institutions as sites for 
+constructing and sustaining forms of social and cultural identity situated in relation to these other 
+cultural frames” (1997, p. 3). Fields such as memetics provide us with unique opportunities to 
+explore this seamless web, raising important questions about how a host of non-theoretical 
+considerations impinge on the growth of fields, shape theoretical work, and influence intra- and 
+extra-scientific knowledge transfer. Of particular relevance to this project are the ways in which 
+various interpretations of the meme concept resonate with historically specific social currents 
+and bodies of knowledge, thereby promoting synergies between memetics and particular 
+academic and popular audiences. In subsequent chapters I look more specifically at how the 
+ongoing development and dissemination of the meme concept has been intertwined with the 
+increasing prominence of genetics, immunology, and technology in diverse cultural realms. 
+ 
+Disciplinary Development 
+
+As suggested by Lenoir’s comments presented above, contextual considerations play an 
+important role in discipline formation and legitimation. The edited volume titled “Perspectives 
+on the Emergence of Scientific Disciplines” (Lemaine et al., 1976) provides us with a 
+noteworthy – albeit more traditional – window into such issues. For starters, this text moved 
+significantly beyond the sort of internalist intellectual histories that dominated earlier studies of 
+science. Many of the pieces in this volume are concerned with the role of both internal 
+intellectual and social processes in disciplinary development, while also exploring how internal 
+and external social factors “actually mould the content of scientific ideas” (p. 16). Historian 
+Michael Worboys (1976) nicely summarized this more inclusive perspective by arguing that “the 
+cognitive development of science, the socio-institutional aspects of science, and the influence of 
+wider social conditions and social change” must all be taken into account when studying the 
+emergence of new scientific fields (p. 93). And while Worboys explicitly challenged the well-
+known but theory-heavy historical accounts developed by authors such as Thomas Kuhn, his 
+remark hints at an early movement toward contextualist and constructivist historical approaches.6 
+However, the pieces in the Lemaine volume largely failed to challenge the formulaic 
+views of disciplinary development that were prominent in historical accounts of science in the 
+1960s and 1970s, Kuhn’s work included. In fact, many of the authors in the Perspectives book 
+focus their analysis somewhat narrowly on the natural and physical sciences – with articles 
+dedicated to genetics, medicine, biology, and astronomy, to name a few – while also assuming a 
+“standard” model of discipline formation. In the Introduction, the authors noted that “all new 
+areas of scientific investigation grow out of prior research or out of the extension of an 
+established body of scientific and/or technical knowledge” (p. 2), and they went on to argue that 
+new research areas tend to develop in set stages, or “typical sequences” (p. 6). The authors also 
+emphasized “the way in which science grows through the branching of new lines of research” (p. 
+                                                 
+7). According to this perspective, scientific disciplines and the subunits thereof predictably move 
+toward stability, built around common theories and methodologies, objects of inquiry, research 
+agendas, institutional structures, and social cohesion. And while the editors admit that this sort of 
+characterization is incomplete, the articles within the volume demonstrate only a dim awareness 
+of the diverse strategies and processes that characterize the emergence and growth of scientific 
+fields. And finally, there was little recognition that patterns of discipline formation may vary 
+significantly depending on whether one is studying the physical, natural, or social sciences. 
+More recently, authors working in the constructivist and contextualist traditions have 
+challenged these traditional views. Lenoir, for instance, argues that we should “avoid thinking of 
+discipline as monolithic and uniform in favor of the notion of a repertoire of packaged and 
+coadapted practices assembled in diverse local settings” (1997, p. 71). In an article exploring the 
+development of geophysics, historian Gregory Good further summarizes how understandings of 
+disciplinarity and discipline formation have changed in recent decades. In most general terms, he 
+follows a line of reasoning similar to that of Lenoir in arguing that disciplines should be 
+understood as “ever-changing frameworks within which scientific activity is organized” (2000, 
+p. 260). Good adds that achieving disciplinarity is far from a simple yes or no proposition, and 
+that “scientific activities may achieve degrees of identity development” (p. 259). Finally, he 
+states that disciplines “pass through no regular stages on their way from immature to mature 
+status” (p. 259). This rather open-ended understanding of disciplines is borne out in Good’s 
+analysis of geophysics, but case studies offered by Lenoir and many other authors point in a 
+similar direction.  
+Yet questions remain regarding the relationship of disciplines to other organizational 
+units, such as sub-disciplines and specialties. Perhaps not surprisingly, Good argues that the 
+answers to such questions are variable according to the context in which they are being asked: 
+A sub-discipline in one context (e.g. seismology against the discipline of 
+geophysics) is interdisciplinary in another context (e.g. seismology related to 
+geology and physics) and is an applied science in another (e.g. seismology in 
+relation to urban policy). Sub-disciplines may focus on a more tightly defined set 
+of research problems, and the more overt importance of pedagogy and political 
+goals may increase with disciplines and supra-disciplines (p. 266). 
+Good further argues that the various units used to describe scientific fields are difficult to rigidly 
+delineate, and even within a single domain “disciplines, sub-disciplines, inter-disciplinary fields, 
+research schools, research programmes and traditions, and specialisations all participate in a 
+complex continuum” (p. 266). As we’ll see, a field such as memetics can be located in any 
+number of these categories, depending on what definitions and criteria are applied. I’ll return to 
+this issue in exploring how proponents position memetics with respect to science generally and 
+other disciplines in particular, with the goal of evaluating the status of the field as a province of 
+scientific activity. But we must also take seriously the ways in which fields develop into 
+recognizable and bounded domains of inquiry, no matter what labels are attached to them. 
+ 
+Marginality and Hybridity 
+
+While case studies reveal that the development of disciplines and sub-disciplines is a 
+highly variable process, we can uncover general patterns evident in the history of numerous 
+fields. Such an inquiry might involve any number of sorting or grouping criteria, but focusing on 
+the origins of contemporary disciplines and subdisciplines proves particularly insightful. In 
+Creative Marginality (1990), political scientists Mattei Dogan and Robert Pahre describe how 
+processes of specialization, fragmentation, and hybridization have shaped the emergence and 
+growth of many twentieth century academic fields. In summary, the authors argue that an 
+increasing density of theorists and theorizing often accompanies disciplinary growth, leading 
+researchers to fragment into specialized subfields. These subfields tend to cluster on the margins 
+of traditional disciplinary bounds, thereby promoting cross-disciplinary exchanges. Offering 
+additional insight into the title of their book, Dogan and Pahre note, “Not only are the margins 
+less densely populated, providing more room to grow, but successful combinations of material 
+from two sub fields typically allows greater scope for creativity. In fact, the greatest 
+accumulation of incremental advances takes place at the intersection of fields” (pp. 7-8). In a 
+vein similar to that of the “boundary work” approach developed by science studies scholars such 
+as Thomas Gieryn (1983; 1999), Dogan and Pahre’s remarks shift our focus away from the core 
+of disciplines to the researchers and theories that populate the boundaries, margins and 
+peripheries of science. 
+Dogan and Pahre describe two types of hybridization that occur as a result of work on the 
+margins, namely institutionalized and informal forms.7 Institutionalized hybrid fields are 
+characterized by widely recognized and relatively stable identities, either as subfields within a 
+larger discipline, or as permanent cross-disciplinary collaborations (1990, p. 63). As the authors 
+note, this form of hybridization has a long history in the physical sciences. For instance, the aptly 
+titled volume Chemical Sciences in the 20th Century: Bridging Boundaries (2001) focuses 
+specifically on the various historical bridges between chemistry and other disciplines, and editor 
+Carsten Reinhardt explicitly references quantum chemistry, geochemistry, and cosmochemistry 
+as examples of “hybrid fields” (Reinhardt, 2001, p. 1-2).  Many of the articles in Reinhardt’s 
+volume also reveal how these and other hybrids develop boundaries that are shaped by not only 
+theoretical considerations, but also historical and social factors. We find similar examples in 
+biology, as evidenced by the molecular and organismic branches and sub-branches that have long 
+defined the organization of the field. Dogan and Pahre emphasize institutionalized hybridization 
+in both the social sciences and between the social and natural sciences, with developmental 
+psychology, criminology, artificial intelligence, and cognitive science a few of their many 
+examples. A more recent hybrid worthy of adding to this mix is the artificial life field, which is 
+the subject of a noteworthy ethnography authored by anthropologist Stephan Helmreich (1998). 
+Helmreich’s book also brings into relief the importance of founder narratives and origin stories 
+in disciplinary histories. 
+Informal hybridization, on the other hand, involves a wide variety of disciplinary 
+exchanges, with “hybridized topics” one prevalent case in point. Klein lists “analogies, methods, 
+theories, topics, concepts, discoveries, and perspectives” as other examples of informal exchange 
+that are explored in Creative Marginality (1993, p. 192). And as hinted at by Dogan and Pahre, 
+the characteristics of both institutional and informal hybridization often overlap. Women’s 
+studies, for instance, is described as an “enormous invisible hybrid college” (p. 70) that has not 
+yet achieved a high level of institutional hybridization. The domain of sociobiology, on the other 
+hand, is described as an immature and controversial hybrid that hasn’t yet been very productive 
+(p. 203). But in looking at these and other fields, the authors also push their argument beyond the 
+                                                 
+various organizational units and subunits that characterize the contemporary sciences. Discussing 
+the individual actors who participate in hybrid fields, Dogan and Pahre coin the label “hybrid 
+marginals” to describe those “creative scholars whose work at the intersection of many subfields 
+leaves them essentially without a home. Like prophets, they often may have no honor in their 
+own fields, but exercise influence in those more distant” (p. 177). Furthermore, the work of these 
+and other scholars are often found in countless “hybrid journals,” the profusion of which has 
+been facilitated in recent years by the ubiquity of information technology and inexpensive 
+electronic publishing (p. 164).  
+In delving into both the history of meme theory and the more recent emergence of an 
+academic community of meme theorists, I will be exploring both institutionalized and informal 
+forms of hybridization. In line with the former, I turn to the ways in which the proponents of 
+meme theory have worked toward establishing memetics as a more stable and cohesive cross-
+disciplinary community, complete with “hybrid marginals” and “hybrid journals.” But the 
+history of the field is also rife with instances of informal hybridization. While Dawkins’s initial 
+presentation of the meme concept is a case of informal hybridization par excellence, the links 
+between memetics and the various coevolutionary theories developed by sociobiologists are 
+another noteworthy example. It should also be noted that Dogan and Pahre’s analysis focuses on 
+processes of hybridization that are largely internal to science and academe. As the preceding 
+overview suggests, the field of memetics stands as a novel historical case precisely because of 
+the links between meme theory and the larger social and culture sphere in which it has 
+developed. Hence, it is necessary to look elsewhere for discussions about the role of popular 
+theorizing in the development of fields and disciplines. 
+ 
+Science Popularization and the Boundaries of Science 
+
+As recently as 1994, historians Roger Cooter and Stephen Pumfrey bemoaned “our 
+ignorance both of the low drama and the high art of science’s diffusion and modes of popular 
+production and reproduction” (p. 237). They begin their critique by problematizing a long 
+influential “diffusionist” approach that assumes scientific knowledge developed by elites is 
+“watered down and then trickled down for popular consumption, along the way losing theoretical 
+content” (p. 248). To counter this view, the authors explore how popular and scientific theorizing 
+might be understood in much more dynamic and interactive terms. Cooter and Pumfrey remark, 
+“[P]opular culture can generate its own natural knowledge which differs from and may even 
+oppose elite science” (p. 249). They add that “there is no reason to suppose that popular science 
+takes the form intended by its popularizers. ‘Successfully popularized’ natural knowledge may 
+take on very different meanings within popular culture from those intended by its popularizers” 
+(p. 249).  
+Even more importantly, the authors draw on the work of various constructivist theorists 
+to suggest that scientific and popular domains reciprocally shape one another: “[P]opularization, 
+conceived as a process of translation and enrolment, reconfigures the cultural content of 
+scientific activity and hence – conceivably – reconfigures the nature of science itself” (p. 251). In 
+promoting this line of reasoning, Cooter and Pumfrey urge historians to be more responsive to 
+the diversity of sites and signifiers in which science is produced and reproduced. Their 
+arguments and recommendations are to some extent born out in the special issue of History of 
+Science in which their article appears, appropriately dedicated to the topic of “Science 
+Popularization.” However, the case studies offered therein focus on nineteenth century examples 
+that sit uneasily with contemporary historical inquiries into fields such as memetics.  
+Surveying a wider field of literature, we find that many authors have focused on the 
+movement of various types of metaphors and rhetoric to explore how scientific knowledge 
+moves both within and beyond the sciences. Emily Martin’s Flexible Bodies (1994) is an 
+important piece in this area, and the author explores how biological concepts are represented in 
+the media and understood by the general public and scholars. Martin also looks at how various 
+metaphors and analogies – such as complex systems theory and the notion of flexibility – have 
+become increasingly ubiquitous in various popular and scientific contexts. Elizabeth Shea 
+(2001), on the other hand, uses textual analysis to explore the gene as a “rhetorical figure.” She 
+reveals the historical origins of the term “gene” while also demonstrating how the meaning and 
+contextual use of the term have changed over time, particularly in the popular realm. Authors 
+such as the aforementioned Jeffreys, Cohn, and Thomas also offer valuable insights into the 
+complex crosscurrents that connect the rhetoric of immunology and technology with both the 
+field of memetics and popular culture outlets such as science fiction texts.  
+However, none of these authors are specifically concerned with connecting the topic of 
+discipline formation to the development and maintenance of various boundaries between the 
+scientific and popular. Casting a wider net reveals that authors studying various fields and 
+disciplines on the margins of science – such as parapsychology, ufology, and creation science – 
+point us toward the various criteria often used to demarcate science from non-science, while also 
+highlighting the historical role of “amateur” theorists and popular audiences in the development 
+of controversial fields. Exploring these cases also reveals how both proponents and opponents of 
+fringe fields use various tactics and strategies in support of their respective agendas. An edited 
+volume (1979) and subsequent article (1985) by sociologist Roy Wallis stand out as noteworthy 
+introductions to these topics, and the diversity of cases presented in these texts supports the 
+argument that the emergence of disciplines is a highly variable and contingent process.  
+Gieryn’s discussions of “boundary-work” (1983; 1995; 1999) also prove valuable to my 
+project as they highlight the construction of boundaries both within and beyond the realm of 
+science. Particularly noteworthy is Gieryn’s studies of four central types of boundary-work, 
+namely monopolization, expansion, expulsion, and protection (1995, pp. 424-439). In relating 
+these themes to various historical case studies drawn from the realm of science and technology 
+studies, Gieryn explores how actors use boundary-work to maintain, control, and legitimate their 
+fields. I will periodically return to the work of both Wallis and Gieryn to not only situate my own 
+account with respect to other disciplinary histories and case studies, but also to discuss the 
+strategies and tactics employed by meme theorists and other actors. In the end, however, it will 
+be evident that memetics has followed a historical trajectory quite unlike that of any other field. 
+ 
+Tracing the Emergence of Memetics 
+
+My exploration of the unique trajectory of meme theory is grounded in a baseline history 
+of memetics from roughly 1976 to present, as developed in the following two chapters. More 
+specifically, Chapter Two examines the field from the 1976 coining of the term “meme” to the 
+publication of the first full-length texts dedicated to the topic roughly two decades later. During 
+this time period, the field was shaped by a handful of foundational texts authored by prominent 
+popular science writers. Perhaps even more importantly, the meme concept also moved toward 
+wider popularization as lesser-known authors embraced the concept and pushed it in new 
+directions. In addition to evaluating the backgrounds and motivations of these proponents of 
+meme theory, I will look at a number of key themes evident in popular discussions of the topic. 
+As the preceding introduction suggests, “meme-as-germ” analogies figure prominently here. 
+Finally, I’ll take a closer look at the resonance between mainstream treatments of memetics and 
+larger social, technological, and historical themes. In Chapter Three I focus on the academic side 
+of meme theorizing, primarily from 1997 to the present, and with an emphasis on the 
+evolutionary analogies (“meme-as-gene”) most prominent in this sphere. This chapter turns to 
+the actors who have promoted memetics as a legitimate scientific discipline, highlighting their 
+backgrounds, institutional affiliations, motivations, and strategies. Finally, I will look at the 
+controversy that surrounds the topic, both with respect to internal debates and the criticisms 
+offered by outsider opponents.  
+The fourth chapter further problematizes the history of memetics by looking at the 
+multiple and at times conflicting narratives that have been invoked to describe the origins of the 
+meme theory. By further delving into the complex milieu from which memetics has emerged, 
+this chapter will evaluate Dawkins’s role as a founding figure, while also situating meme theory 
+in a more inclusive historical context. Chapter Four also brings into further relief the extent to 
+which disciplinary histories are frequently intertwined with the politics of discipline formation. 
+In the Conclusion, I briefly assess both the contemporary state of the field and its prospects as a 
+formative discipline to suggest that memetics might be viewed, quite metaphorically, as a case 
+study in divergent evolution. 
+                                                 
+1. My use of the term “field” is not meant to suggest that memetics has achieved a high level of legitimacy, 
+disciplinarity, or cohesiveness. Throughout this project I use “field” more generally, as in “branch of knowledge” or 
+“domain of inquiry,” without any additional normative assumptions. 
+
+2. Dawkins added that the term meme “could alternatively be thought of as being related to ‘memory,’ or to the 
+French word même” (1976, p. 192). 
+
+3. For the sake of historical accuracy, the term “memetics” is not an appropriate label for the entire history of the 
+field. Before roughly the mid-1980s, there was only scattered discussion of “meme theory” or the “meme concept.” 
+
+4. See Brodie (1996), Lynch (1996), Blackmore (1999), and Aunger (2000; 2002). 
+
+5. Journalist Unmesh Kher (2001) attributes the “meaningless metaphor” condemnation to Gould, and the “cocktail-
+party science” moniker to evolutionary geneticist H. Allen Orr. 
+
+6. Worboys’ article explicitly discussed the limitations of Kuhn’s approach (Worboys, 1976, pp. 76-77). He noted 
+that Kuhn discussed only one or two “mechanisms of specialty emergence” (p. 76), and he added that “Kuhn sees 
+shared paradigms or specialties as essentially theory-based … Kuhn can still be seen in the tradition of intellectual 
+history of science” (p. 77). 
+
+7. Sociologist Peter Weingart’s earlier discussion of hybridity is also worth noting here as an important predecessor 
+to the work of Dogan and Pahre (Weingart, 1982, pp. 74-78). He used the phrase “hybrid communities” in reference 
+to various configurations of “expert groups” that emerge in science policy-making processes. Weingart framed the 
+hybrid concept to include both scientists and experts more generally, and his study was explicitly concerned with the 
+intersection of knowledge and politics in the formation of expert knowledge communities. 
 `;
 
 export let DEMO_journal_article = `In this chapter, we describe how to compactify heterotic string theory on orbifolds (for further
